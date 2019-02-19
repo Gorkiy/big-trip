@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Петр Яковлев](https://up.htmlacademy.ru/ecmascript/8/user/43401).
-* Наставник: `Неизвестно`.
+* Наставник: [Вадим Шевяков](https://htmlacademy.ru/profile/id574589).
 
 ---
 
