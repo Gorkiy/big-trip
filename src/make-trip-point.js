@@ -1,9 +1,9 @@
 const types = {
   taxi: `🚕`,
   plane: `✈️`,
-  car:`🚗`,
-  hotel:`🏨`
-}
+  car: `🚗`,
+  hotel: `🏨`
+};
 
 export function renderTripPoint(type, destination, start, end, duration, price, offers) {
   const typeIcon = types[type];
@@ -18,12 +18,12 @@ export function renderTripPoint(type, destination, start, end, duration, price, 
     </p>
     <p class="trip-point__price">&euro;&nbsp;${price}</p>
     <ul class="trip-point__offers">
-      ${ offers.map(offer =>
-        `<li>
+      ${ offers.map((offer) =>
+    `<li>
           <button class="trip-point__offer">${offer}</button>
         </li>`
-      ).join(``)
-      }
+  ).join(``)
+}
     </ul>
   </article>`;
 }

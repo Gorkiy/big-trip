@@ -26,7 +26,7 @@ function toggleFilter(event) {
 
 function renderFilters() {
   let result = ``;
-  result += renderFilter(`Everything`, 1),
+  result += renderFilter(`Everything`, 1);
   result += renderFilter(`Future`);
   result += renderFilter(`Past`);
   mainFilter.innerHTML = result;
