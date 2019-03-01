@@ -1,9 +1,8 @@
 import {renderFilter} from './make-filter.js';
 import {renderTripPoint, tripPoint} from './make-trip-point.js';
 
-let pointsByDay = new Map();
-
 const tripPoints = document.querySelector(`.trip-points`);
+let pointsByDay = new Map();
 let points = [];
 
 function renderTripPoints(amount) {
@@ -21,7 +20,8 @@ function renderTripPoints(amount) {
     }
   }
 
-  pointsByDay.forEach((day) => {
+  const pointsByDaySorted = new Map([...pointsByDay.entries()].sort()); // для сортировки рендера по дате
+  pointsByDaySorted.forEach((day) => {
     let point = day[0];
     result += `
     <section class="trip-day">

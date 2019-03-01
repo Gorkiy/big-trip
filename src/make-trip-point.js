@@ -103,19 +103,23 @@ const getTime = () => {
   };
 };
 
-export const tripPoint = () => ({
-  city: cities[getRandomInt(cities.length)],
-  type: getRandomType(types)[0],
-  typeIcon: getRandomType(types)[1],
-  description: getDescription(description),
-  picture: `//picsum.photos/300/150?r=${Math.random()}`,
-  price: (20 + getRandomInt(8) * 10),
-  offers: getRandomOffers(offers),
-  day: getRandomDate().tripDay,
-  month: getRandomDate().tripMonth + ` ` + getRandomDate().tripYear,
-  time: getTime(),
-  uniqueDay: getRandomDate().uniqueDay,
-});
+export const tripPoint = () => {
+  let randomType = getRandomType(types);
+  let randomDate = getRandomDate();
+  return {
+    city: cities[getRandomInt(cities.length)],
+    type: randomType[0],
+    typeIcon: randomType[1],
+    description: getDescription(description),
+    picture: `//picsum.photos/300/150?r=${Math.random()}`,
+    price: (20 + getRandomInt(8) * 10),
+    offers: getRandomOffers(offers),
+    day: randomDate.tripDay,
+    month: randomDate.tripMonth + ` ` + randomDate.tripYear,
+    uniqueDay: randomDate.uniqueDay,
+    time: getTime(),
+  };
+};
 
 export function renderTripPoint(curPoint) {
   return `
