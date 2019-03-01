@@ -14,9 +14,7 @@ function renderTripPoints(amount) {
     if (!pointsByDay.has(point.uniqueDay)) {
       pointsByDay.set(point.uniqueDay, [point]);
     } else {
-      let updateValues = pointsByDay.get(point.uniqueDay);
-      updateValues.push(point);
-      pointsByDay.set(point.uniqueDay, updateValues);
+      pointsByDay.get(point.uniqueDay).push(point);
     }
   }
 

@@ -30,8 +30,9 @@ const getRandomType = (typesObj) => {
 
 const getDescription = (text) => {
   const textArr = text.split(`. `);
+  const sentencesNum = getRandomInt(4);
   let result = [];
-  for (let i = 0; i < getRandomInt(4); i++) {
+  for (let i = 0; i < sentencesNum; i++) {
     let sentence = textArr[getRandomInt(textArr.length)];
     if (!result.includes(sentence)) {
       result.push(sentence);
