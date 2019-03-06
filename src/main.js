@@ -1,39 +1,47 @@
 import {renderFilter} from './make-filter.js';
-import {renderTripPoint, tripPoint} from './make-trip-point.js';
+import {makeTripPoint} from './make-trip-point.js';
+import Point from './point.js';
+import PointEdit from './point-edit.js';
+import TripDay from './trip-day.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 let pointsByDay = new Map();
 let points = [];
 
 function renderTripPoints(amount) {
-  let result = ``;
   for (let i = 0; i < amount; i++) {
-    let point = tripPoint();
+    let point = new Point(makeTripPoint());
+    let pointEdit = new PointEdit(makeTripPoint());
     points.push(point);
+    pointEdit.render();
 
-    if (!pointsByDay.has(point.uniqueDay)) {
-      pointsByDay.set(point.uniqueDay, [point]);
+    // tripPoints.appendChild(pointEdit.render());
+    point.onEdit = () => {
+      pointEdit.render();
+      tripPoints.replaceChild(pointEdit.element, point.element);
+      point.unrender();
+    };
+
+    pointEdit.onSubmit = () => {
+      point.render();
+      tripPoints.replaceChild(point.element, pointEdit.element);
+      pointEdit.unrender();
+    };
+
+
+    if (!pointsByDay.has(point.date.uniqueDay)) {
+      pointsByDay.set(point.date.uniqueDay, [point]);
     } else {
-      pointsByDay.get(point.uniqueDay).push(point);
+      pointsByDay.get(point.date.uniqueDay).push(point);
     }
   }
 
-  const pointsByDaySorted = new Map([...pointsByDay.entries()].sort()); // для сортировки рендера по дате
-  pointsByDaySorted.forEach((day) => {
-    let point = day[0];
-    result += `
-    <section class="trip-day">
-      <article class="trip-day__info">
-        <span class="trip-day__caption">Day</span>
-        <p class="trip-day__number">${point.day}</p>
-        <h2 class="trip-day__title">${point.month}</h2>
-      </article>
-      <div class="trip-day__items">
-        ${day.map((curPoint) => renderTripPoint(curPoint)).join(``)}
-      </div>
-    </section>`;
+  const pointsByDaySorted = new Map([...pointsByDay.entries()].sort());
+  pointsByDaySorted.forEach((dayPoints) => {
+    let day = new TripDay(dayPoints);
+    // Весь рендер теперь делает эта строчка
+    tripPoints.appendChild(day.render());
   });
-  tripPoints.innerHTML = result;
 }
 
 function toggleFilter(event) {
