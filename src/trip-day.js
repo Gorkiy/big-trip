@@ -8,6 +8,7 @@ class TripDay {
     this._day = data[0].day;
     this._month = data[0].month;
     this._uniqueDay = data[0].uniqueDay;
+    this._dayItems = ``;
     this._element = null;
   }
 
@@ -39,13 +40,13 @@ class TripDay {
 
       point.onEdit = () => {
         pointEdit.render();
-        this._element.replaceChild(pointEdit.element, point.element);
+        this._dayItems.replaceChild(pointEdit.element, point.element);
         point.unrender();
       };
 
       pointEdit.onSubmit = () => {
         point.render();
-        this._element.replaceChild(point.element, pointEdit.element);
+        this._dayItems.replaceChild(point.element, pointEdit.element);
         pointEdit.unrender();
       };
     }
