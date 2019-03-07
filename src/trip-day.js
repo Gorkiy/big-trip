@@ -1,10 +1,13 @@
+import Point from './point.js';
+import PointEdit from './point-edit.js';
+
 class TripDay {
   constructor(data) {
-    this._points = data;
-    this._day = data[0].date.day;
-    this._month = data[0].date.month;
-    this._uniqueDay = data[0].date.uniqueDay;
-    this._time = data[0].date.time;
+    this._pointsData = data;
+    this._points = [];
+    this._day = data[0].day;
+    this._month = data[0].month;
+    this._uniqueDay = data[0].uniqueDay;
     this._element = null;
   }
 
@@ -16,12 +19,36 @@ class TripDay {
 
   render() {
     this._element = this._createElement(this.template);
-    const dayItems = this._element.querySelector(`.trip-day__items`);
+    this._dayItems = this._element.querySelector(`.trip-day__items`);
+    this.build();
+
     this._points.map((curPoint) => {
-      curPoint.render();
-      dayItems.appendChild(curPoint.element);
+      this._dayItems.appendChild(curPoint.element);
     });
     return this._element;
+  }
+
+  build() {
+    for (let pointData of this._pointsData) {
+      let point = new Point(pointData);
+      let pointEdit = new PointEdit(pointData);
+      point.render();
+      pointEdit.render();
+
+      this._points.push(point);
+
+      point.onEdit = () => {
+        pointEdit.render();
+        this._element.replaceChild(pointEdit.element, point.element);
+        point.unrender();
+      };
+
+      pointEdit.onSubmit = () => {
+        point.render();
+        this._element.replaceChild(point.element, pointEdit.element);
+        pointEdit.unrender();
+      };
+    }
   }
 
   unrender() {
