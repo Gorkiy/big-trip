@@ -38,6 +38,7 @@ function toggleFilter(event) {
     const randomAmount = Math.floor(Math.random() * 6) + 1;
     generatePointsData(randomAmount);
     renderPoints();
+
   }
 }
 

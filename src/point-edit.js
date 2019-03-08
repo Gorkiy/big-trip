@@ -34,13 +34,11 @@ class PointEdit {
   }
 
   bind() {
-    this._element.querySelector(`.point__button--save`)
-      .addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
   unbind() {
-    this._element.querySelector(`.point__button--save`)
-        .removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
   }
 
   _onSubmitButtonClick(evt) {
@@ -63,8 +61,8 @@ class PointEdit {
     };
   }
 
-  set onEdit(fn) {
-    this._onEdit = fn;
+  set onSubmit(fn) {
+    this._onSubmit = fn;
   }
 
   get template() {
