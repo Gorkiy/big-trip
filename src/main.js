@@ -1,39 +1,32 @@
 import {renderFilter} from './make-filter.js';
-import {renderTripPoint, tripPoint} from './make-trip-point.js';
+import {makeTripPoint} from './make-trip-point.js';
+import TripDay from './trip-day.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 let pointsByDay = new Map();
 let points = [];
 
-function renderTripPoints(amount) {
-  let result = ``;
+// Генерируем массив точек и рассовываем их по дням в pointsByDay
+function generatePointsData(amount) {
   for (let i = 0; i < amount; i++) {
-    let point = tripPoint();
-    points.push(point);
+    let pointData = makeTripPoint();
+    points.push(pointData);
 
-    if (!pointsByDay.has(point.uniqueDay)) {
-      pointsByDay.set(point.uniqueDay, [point]);
+    if (!pointsByDay.has(pointData.uniqueDay)) {
+      pointsByDay.set(pointData.uniqueDay, [pointData]);
     } else {
-      pointsByDay.get(point.uniqueDay).push(point);
+      pointsByDay.get(pointData.uniqueDay).push(pointData);
     }
   }
+  pointsByDay = new Map([...pointsByDay.entries()].sort());
+}
 
-  const pointsByDaySorted = new Map([...pointsByDay.entries()].sort()); // для сортировки рендера по дате
-  pointsByDaySorted.forEach((day) => {
-    let point = day[0];
-    result += `
-    <section class="trip-day">
-      <article class="trip-day__info">
-        <span class="trip-day__caption">Day</span>
-        <p class="trip-day__number">${point.day}</p>
-        <h2 class="trip-day__title">${point.month}</h2>
-      </article>
-      <div class="trip-day__items">
-        ${day.map((curPoint) => renderTripPoint(curPoint)).join(``)}
-      </div>
-    </section>`;
+function renderPoints() {
+  pointsByDay.forEach((dayPoints) => {
+    let day = new TripDay(dayPoints);
+    tripPoints.appendChild(day.render());
   });
-  tripPoints.innerHTML = result;
+
 }
 
 function toggleFilter(event) {
@@ -43,7 +36,9 @@ function toggleFilter(event) {
     pointsByDay.clear();
     tripPoints.innerHTML = ``;
     const randomAmount = Math.floor(Math.random() * 6) + 1;
-    renderTripPoints(randomAmount);
+    generatePointsData(randomAmount);
+    renderPoints();
+
   }
 }
 
@@ -59,5 +54,6 @@ const mainFilter = document.querySelector(`.trip-filter`);
 mainFilter.addEventListener(`click`, toggleFilter);
 
 // Temp render
-renderTripPoints(7);
+generatePointsData(7);
+renderPoints();
 renderFilters();

@@ -104,7 +104,7 @@ const getTime = () => {
   };
 };
 
-export const tripPoint = () => {
+export const makeTripPoint = () => {
   let randomType = getRandomType(types);
   let randomDate = getRandomDate();
   return {
@@ -121,24 +121,3 @@ export const tripPoint = () => {
     time: getTime(),
   };
 };
-
-export function renderTripPoint(curPoint) {
-  return `
-  <article class="trip-point">
-    <i class="trip-icon">${curPoint.typeIcon}</i>
-    <h3 class="trip-point__title">${curPoint.type} to ${curPoint.city}</h3>
-    <p class="trip-point__schedule">
-      <span class="trip-point__timetable">${curPoint.time.from}&nbsp;&mdash; ${curPoint.time.due}</span>
-      <span class="trip-point__duration">${curPoint.time.duration}</span>
-    </p>
-    <p class="trip-point__price">&euro;&nbsp;${curPoint.price}</p>
-    <ul class="trip-point__offers">
-      ${ curPoint.offers.map((offer) =>
-    `<li>
-          <button class="trip-point__offer">${offer}</button>
-        </li>`
-  ).join(``)
-}
-    </ul>
-  </article>`;
-}
