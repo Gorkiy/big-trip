@@ -1,5 +1,8 @@
-class PointEdit {
+import Component from './component.js';
+
+class PointEdit extends Component {
   constructor(data) {
+    super();
     this._city = data.city;
     this._type = data.type;
     this._typeIcon = data.typeIcon;
@@ -11,33 +14,15 @@ class PointEdit {
     this._month = data.month;
     this._uniqueDay = data.uniqueDay;
     this._time = data.time;
-    this._element = null;
     this._onSubmit = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
   }
 
-  _createElement(template) {
-    const newElement = document.createElement(`div`);
-    newElement.innerHTML = template;
-    return newElement.firstChild;
-  }
-
-  render() {
-    this._element = this._createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
-  }
-
-  bind() {
+  createListeners() {
     this._element.addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
-  unbind() {
+  removeListeners() {
     this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
   }
 
@@ -47,20 +32,6 @@ class PointEdit {
       this._onSubmit();
     }
   }
-
-  get element() {
-    return this._element;
-  }
-
-  get date() {
-    return {
-      day: this._day,
-      month: this._month,
-      uniqueDay: this._uniqueDay,
-      time: this._time,
-    };
-  }
-
   set onSubmit(fn) {
     this._onSubmit = fn;
   }

@@ -1,5 +1,8 @@
-class Point {
+import Component from './component.js';
+
+class Point extends Component {
   constructor(data) {
+    super();
     this._city = data.city;
     this._type = data.type;
     this._typeIcon = data.typeIcon;
@@ -11,33 +14,15 @@ class Point {
     this._month = data.month;
     this._uniqueDay = data.uniqueDay;
     this._time = data.time;
-    this._element = null;
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
   }
 
-  _createElement(template) {
-    const newElement = document.createElement(`div`);
-    newElement.innerHTML = template;
-    return newElement.firstChild;
-  }
-
-  render() {
-    this._element = this._createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
-  }
-
-  bind() {
+  createListeners() {
     this._element.addEventListener(`click`, this._onEditButtonClick);
   }
 
-  unbind() {
+  removeListeners() {
     this._element.removeEventListener(`click`, this._onEditButtonClick);
   }
 
@@ -45,19 +30,6 @@ class Point {
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
-  }
-
-  get element() {
-    return this._element;
-  }
-
-  get date() {
-    return {
-      day: this._day,
-      month: this._month,
-      uniqueDay: this._uniqueDay,
-      time: this._time,
-    };
   }
 
   set onEdit(fn) {
