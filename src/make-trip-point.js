@@ -1,15 +1,15 @@
 const cities = [`Tokyo`, `San Francisco`, `Porto`, `Moscow`, `Paris`];
-const types = {
+export const types = {
   'Taxi': `🚕`,
   'Bus': `🚌`,
   'Train': `🚂`,
-  'Ship': `🛳️`,
-  'Transport': `🚊`,
-  'Drive': `🚗`,
+  // 'Ship': `🛳️`,
+  // 'Transport': `🚊`,
+  // 'Drive': `🚗`,
   'Flight': `✈️`,
   'Check-in': `🏨`,
   'Sightseeing': `🏛`,
-  'Restaurant': `🍴`,
+  // 'Restaurant': `🍴`,
 };
 
 const description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
@@ -89,6 +89,9 @@ const getTime = () => {
   dueDate.setMinutes(dueDate.getMinutes() + durationMin);
   let dueHours = dueDate.getHours();
   let dueMinutes = dueDate.getMinutes();
+
+  // const timeDifference = dueDate - date;
+  // let duration = Math.round(((timeDifference % 86400000) % 3600000) / 60000);
 
   if (dueHours < 10) {
     dueHours = `0` + dueHours;

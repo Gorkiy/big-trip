@@ -44,7 +44,16 @@ class TripDay {
         point.unrender();
       };
 
-      pointEdit.onSubmit = () => {
+      pointEdit.onSubmit = (newObject) => {
+        pointData.city = newObject.city;
+        pointData.type = newObject.type;
+        pointData.typeIcon = newObject.typeIcon;
+        pointData.description = newObject.description;
+        pointData.price = newObject.price;
+        // pointData.offers = newObject.offers;
+        pointData.time = newObject.time;
+
+        point.update(pointData);
         point.render();
         this._dayItems.replaceChild(point.element, pointEdit.element);
         pointEdit.unrender();

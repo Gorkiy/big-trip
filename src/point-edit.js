@@ -1,4 +1,5 @@
 import Component from './component.js';
+import {types} from './make-trip-point.js';
 
 class PointEdit extends Component {
   constructor(data) {
@@ -16,22 +17,97 @@ class PointEdit extends Component {
     this._time = data.time;
     this._onSubmit = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onChangeType = this._onChangeType.bind(this);
   }
 
-  createListeners() {
-    this._element.addEventListener(`submit`, this._onSubmitButtonClick);
+  _processForm(formData) {
+    const entry = {
+      city: ``,
+      type: ``,
+      time: this._time,
+      price: ``,
+    };
+
+    const pointEditMapper = PointEdit.createMapper(entry);
+    for (const pair of formData.entries()) {
+      const [property, value] = pair;
+      if (pointEditMapper[property]) {
+        pointEditMapper[property](value);
+      }
+    }
+
+    entry.typeIcon = types[entry.type];
+    return entry;
   }
 
-  removeListeners() {
-    this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
+  static createMapper(target) {
+    return {
+      'destination': (value) => {
+        target.city = value;
+      },
+      'travel-way': (value) => {
+        target.type = value[0].toUpperCase() + value.slice(1);
+      },
+      'time': (value) => {
+        const fromDue = value.split(` — `);
+        target.time.from = fromDue[0];
+        target.time.due = fromDue[1];
+      },
+      'price': (value) => {
+        target.price = value;
+      },
+    };
   }
 
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
+    const formData = new FormData(this._element.querySelector(`.point > form`));
+    // console.log([...formData.entries()]);
+    const newData = this._processForm(formData);
     if (typeof this._onSubmit === `function`) {
-      this._onSubmit();
+      this._onSubmit(newData);
+    }
+    this.update(newData);
+  }
+
+  createListeners() {
+    this._element.addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.travel-way__select`)
+    .addEventListener(`click`, this._onChangeType);
+  }
+
+  removeListeners() {
+    this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.travel-way__select`)
+    .addEventListener(`click`, this._onChangeType);
+  }
+
+  _onChangeType(evt) {
+    const selection = evt.target.closest(`.travel-way__select-input`);
+    if (selection) {
+      let typeName = selection.value;
+      this._type = typeName[0].toUpperCase() + typeName.slice(1);
+      this._typeIcon = types[this._type];
+      this._partialUpdate();
     }
   }
+
+  _partialUpdate() {
+    this.removeListeners();
+    const oldElement = this._element;
+    this.render();
+    oldElement.parentNode.replaceChild(this._element, oldElement);
+  }
+
+  update(data) {
+    this._city = data.city;
+    this._type = data.type;
+    this._typeIcon = data.typeIcon;
+    this._description = data.description;
+    this._price = data.price;
+    this._time = data.time;
+  }
+
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
@@ -53,24 +129,24 @@ class PointEdit extends Component {
 
             <div class="travel-way__select">
               <div class="travel-way__select-group">
-                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi">
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi" ${this._type === `Taxi` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-taxi">🚕 taxi</label>
 
-                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-bus" name="travel-way" value="bus">
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-bus" name="travel-way" value="bus" ${this._type === `Bus` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-bus">🚌 bus</label>
 
-                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travel-way" value="train">
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travel-way" value="train" ${this._type === `Train` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-train">🚂 train</label>
 
-                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="train" checked>
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="flight" ${this._type === `Flight` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
               </div>
 
               <div class="travel-way__select-group">
-                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in">
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in" ${this._type === `Check-in` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-check-in">🏨 check-in</label>
 
-                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sight-seeing">
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sightseeing" ${this._type === `Sightseeing` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>
               </div>
             </div>
