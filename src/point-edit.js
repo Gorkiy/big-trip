@@ -1,5 +1,6 @@
 import Component from './component.js';
 import {types} from './make-trip-point.js';
+import flatpickr from 'flatpickr';
 
 class PointEdit extends Component {
   constructor(data) {
@@ -74,6 +75,17 @@ class PointEdit extends Component {
     this._element.addEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.travel-way__select`)
     .addEventListener(`click`, this._onChangeType);
+
+    this._setTime();
+  }
+
+  _setTime() {
+    flatpickr(this._element.querySelector(`.point__time > .point__input`), {
+      'enableTime': true,
+      'noCalendar': true,
+      'time_24hr': true,
+      'defaultDate': this.date.time.from
+    });
   }
 
   removeListeners() {
