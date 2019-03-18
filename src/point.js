@@ -36,6 +36,15 @@ class Point extends Component {
     this._onEdit = fn;
   }
 
+  update(data) {
+    this._city = data.city;
+    this._type = data.type;
+    this._typeIcon = data.typeIcon;
+    this._price = data.price;
+    this._offers = data.offers;
+    this._time = data.time;
+  }
+
   get template() {
     return `
     <article class="trip-point">

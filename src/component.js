@@ -27,15 +27,17 @@ class Component {
     return this._element;
   }
 
-  createListeners() {}
-
-  removeListeners() {}
-
   unrender() {
     this.removeListeners();
     this._element.remove();
     this._element = null;
   }
+
+  createListeners() {}
+
+  removeListeners() {}
+
+  update() {}
 
   get date() {
     return {
