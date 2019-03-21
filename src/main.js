@@ -4,7 +4,7 @@ import TripDay from './trip-day.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 let pointsByDay = new Map();
-let points = [];
+export let points = [];
 
 // Генерируем массив точек и рассовываем их по дням в pointsByDay
 function generatePointsData(amount) {
@@ -26,7 +26,6 @@ function renderPoints() {
     let day = new TripDay(dayPoints);
     tripPoints.appendChild(day.render());
   });
-
 }
 
 function toggleFilter(event) {

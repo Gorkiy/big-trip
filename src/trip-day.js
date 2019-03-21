@@ -30,7 +30,7 @@ class TripDay {
   }
 
   build() {
-    for (let pointData of this._pointsData) {
+    this._pointsData.forEach((pointData, i) => {
       let point = new Point(pointData);
       let pointEdit = new PointEdit(pointData);
       point.render();
@@ -58,7 +58,12 @@ class TripDay {
         this._dayItems.replaceChild(point.element, pointEdit.element);
         pointEdit.unrender();
       };
-    }
+
+      pointEdit.onDelete = () => {
+        this._points[i] = null;
+        pointEdit.unrender();
+      };
+    });
   }
 
   unrender() {

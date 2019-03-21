@@ -17,7 +17,9 @@ class PointEdit extends Component {
     this._uniqueDay = data.uniqueDay;
     this._time = data.time;
     this._onSubmit = null;
+    this._onDelete = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
   }
 
@@ -71,12 +73,20 @@ class PointEdit extends Component {
     this.update(newData);
   }
 
-  createListeners() {
-    this._element.addEventListener(`submit`, this._onSubmitButtonClick);
-    this._element.querySelector(`.travel-way__select`)
-    .addEventListener(`click`, this._onChangeType);
+  _onDeleteButtonClick() {
+    if (typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
+  }
 
-    this._setTime();
+  _onChangeType(evt) {
+    const selection = evt.target.closest(`.travel-way__select-input`);
+    if (selection) {
+      let typeName = selection.value;
+      this._type = typeName[0].toUpperCase() + typeName.slice(1);
+      this._typeIcon = types[this._type];
+      this._partialUpdate();
+    }
   }
 
   _setTime() {
@@ -88,20 +98,21 @@ class PointEdit extends Component {
     });
   }
 
+  createListeners() {
+    this._element.addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.travel-way__select`)
+    .addEventListener(`click`, this._onChangeType);
+    this._element.querySelector(`.point__button--delete`)
+      .addEventListener(`click`, this._onDeleteButtonClick);
+    this._setTime();
+  }
+
   removeListeners() {
     this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.travel-way__select`)
     .addEventListener(`click`, this._onChangeType);
-  }
-
-  _onChangeType(evt) {
-    const selection = evt.target.closest(`.travel-way__select-input`);
-    if (selection) {
-      let typeName = selection.value;
-      this._type = typeName[0].toUpperCase() + typeName.slice(1);
-      this._typeIcon = types[this._type];
-      this._partialUpdate();
-    }
+    this._element.querySelector(`.point__button--delete`)
+      .removeEventListener(`click`, this._onDeleteButtonClick);
   }
 
   _partialUpdate() {
@@ -122,6 +133,10 @@ class PointEdit extends Component {
 
   set onSubmit(fn) {
     this._onSubmit = fn;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   get template() {
@@ -188,7 +203,7 @@ class PointEdit extends Component {
 
           <div class="point__buttons">
             <button class="point__button point__button--save" type="submit">Save</button>
-            <button class="point__button" type="reset">Delete</button>
+            <button class="point__button point__button--delete" type="reset">Delete</button>
           </div>
 
           <div class="paint__favorite-wrap">
