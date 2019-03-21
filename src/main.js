@@ -1,58 +1,80 @@
-import {renderFilter} from './make-filter.js';
+import {makeFilterData} from './make-filter.js';
 import {makeTripPoint} from './make-trip-point.js';
 import TripDay from './trip-day.js';
+import Filter from './filter.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
+const mainFilter = document.querySelector(`.trip-filter`);
 let pointsByDay = new Map();
 export let points = [];
+let filtersRawData = [
+  makeFilterData(`everything`, `filter-everything`, true),
+  makeFilterData(`future`, `filter-future`),
+  makeFilterData(`past`, `filter-past`),
+];
 
-// Генерируем массив точек и рассовываем их по дням в pointsByDay
-function generatePointsData(amount) {
+// Генерация входящих данных с массивом объектов-точек
+const getPoints = (amount) => {
+  let result = [];
   for (let i = 0; i < amount; i++) {
     let pointData = makeTripPoint();
-    points.push(pointData);
+    result.push(pointData);
+  }
+  return result;
+};
 
-    if (!pointsByDay.has(pointData.uniqueDay)) {
-      pointsByDay.set(pointData.uniqueDay, [pointData]);
+// Сортировка точек по дням
+const sortPointsByDay = (data) => {
+  pointsByDay.clear();
+  for (let point of data) {
+    if (!pointsByDay.has(point.uniqueDay)) {
+      pointsByDay.set(point.uniqueDay, [point]);
     } else {
-      pointsByDay.get(pointData.uniqueDay).push(pointData);
+      pointsByDay.get(point.uniqueDay).push(point);
     }
   }
   pointsByDay = new Map([...pointsByDay.entries()].sort());
-}
+};
 
-function renderPoints() {
-  pointsByDay.forEach((dayPoints) => {
+// Отрисовка точек из отсортированной по дням базы точек
+const renderPoints = (data) => {
+  data.forEach((dayPoints) => {
     let day = new TripDay(dayPoints);
     tripPoints.appendChild(day.render());
   });
-}
+};
 
-function toggleFilter(event) {
-  let clickedFilter = event.target.closest(`.trip-filter__item`);
-  if (clickedFilter) {
-    points = [];
-    pointsByDay.clear();
-    tripPoints.innerHTML = ``;
-    const randomAmount = Math.floor(Math.random() * 6) + 1;
-    generatePointsData(randomAmount);
-    renderPoints();
+const filterTasks = (data, filterName) => {
+  switch (filterName) {
+    case `filter-everything`:
+      return data;
 
+    case `filter-future`:
+      return data.filter((it) => it.dateThen > Date.now());
+
+    case `filter-past`:
+      return data.filter((it) => it.dateThen < Date.now());
   }
-}
+  return data;
+};
 
-function renderFilters() {
-  let result = ``;
-  result += renderFilter(`Everything`, 1);
-  result += renderFilter(`Future`);
-  result += renderFilter(`Past`);
-  mainFilter.innerHTML = result;
-}
+function renderFilters(filtersData) {
+  filtersData.forEach((rawFilter) => {
+    let filter = new Filter(rawFilter);
+    mainFilter.appendChild(filter.render());
 
-const mainFilter = document.querySelector(`.trip-filter`);
-mainFilter.addEventListener(`click`, toggleFilter);
+    filter.onFilter = () => {
+      const filterName = filter._id;
+      const filteredTasks = filterTasks(points, filterName);
+      tripPoints.innerHTML = ``;
+      sortPointsByDay(filteredTasks);
+      renderPoints(pointsByDay);
+    };
+  });
+}
 
 // Temp render
-generatePointsData(7);
-renderPoints();
-renderFilters();
+points = getPoints(7);
+sortPointsByDay(points);
+renderPoints(pointsByDay);
+renderFilters(filtersRawData);

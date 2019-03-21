@@ -1,5 +1,6 @@
 import Point from './point.js';
 import PointEdit from './point-edit.js';
+// import {points} from './main.js'; <-- Нужно в будущем обновлять данные в main.js
 
 class TripDay {
   constructor(data) {
@@ -50,7 +51,6 @@ class TripDay {
         pointData.typeIcon = newObject.typeIcon;
         pointData.description = newObject.description;
         pointData.price = newObject.price;
-        // pointData.offers = newObject.offers;
         pointData.time = newObject.time;
 
         point.update(pointData);
@@ -60,8 +60,12 @@ class TripDay {
       };
 
       pointEdit.onDelete = () => {
-        this._points[i] = null;
+        this._points[i] = null; // Здесь проблема. Если после удаления, воспользоваться любым фильтром, все удаленные точки вернутся
         pointEdit.unrender();
+        // Также нужно делать анрендер дня целиком, если точек в дне не осталось
+        // if (this._points.length === 0) {
+        //   this._element.remove();
+        // } <-- Это не работает, потому что у нас длина остается неизменной
       };
     });
   }

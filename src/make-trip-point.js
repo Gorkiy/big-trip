@@ -66,7 +66,8 @@ const getRandomDate = () => {
     tripYear: (`` + date.getFullYear()).substr(-2),
     tripMonth: monthNames[date.getMonth()],
     tripDay: date.getDate().toString(),
-    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(), // Для проверки разных дат
+    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+    dateThen: date,
   };
 };
 
@@ -121,6 +122,7 @@ export const makeTripPoint = () => {
     day: randomDate.tripDay,
     month: randomDate.tripMonth + ` ` + randomDate.tripYear,
     uniqueDay: randomDate.uniqueDay,
+    dateThen: randomDate.dateThen,
     time: getTime(),
   };
 };
