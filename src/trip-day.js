@@ -1,6 +1,5 @@
 import Point from './point.js';
 import PointEdit from './point-edit.js';
-// import {points} from './main.js'; <-- Нужно в будущем обновлять данные в main.js
 
 class TripDay {
   constructor(data) {
@@ -9,7 +8,7 @@ class TripDay {
     this._day = data[0].day;
     this._month = data[0].month;
     this._uniqueDay = data[0].uniqueDay;
-    this._dayItems = ``;
+    this._dayElements = ``;
     this._element = null;
   }
 
@@ -21,11 +20,11 @@ class TripDay {
 
   render() {
     this._element = this._createElement(this.template);
-    this._dayItems = this._element.querySelector(`.trip-day__items`);
+    this._dayElements = this._element.querySelector(`.trip-day__items`);
     this.build();
 
     this._points.map((curPoint) => {
-      this._dayItems.appendChild(curPoint.element);
+      this._dayElements.appendChild(curPoint.element);
     });
     return this._element;
   }
@@ -41,7 +40,7 @@ class TripDay {
 
       point.onEdit = () => {
         pointEdit.render();
-        this._dayItems.replaceChild(pointEdit.element, point.element);
+        this._dayElements.replaceChild(pointEdit.element, point.element);
         point.unrender();
       };
 
@@ -55,7 +54,7 @@ class TripDay {
 
         point.update(pointData);
         point.render();
-        this._dayItems.replaceChild(point.element, pointEdit.element);
+        this._dayElements.replaceChild(point.element, pointEdit.element);
         pointEdit.unrender();
       };
 
@@ -63,7 +62,7 @@ class TripDay {
         this._points[i] = null; // Здесь проблема. Если после удаления, воспользоваться любым фильтром, все удаленные точки вернутся
         pointEdit.unrender();
 
-        if(this._points.every(element => element === null)) {
+        if (this._points.every((element) => element === null)) {
           this._element.remove();
         }
       };
