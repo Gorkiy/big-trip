@@ -14,6 +14,8 @@ class Point extends Component {
     this._month = data.month;
     this._uniqueDay = data.uniqueDay;
     this._time = data.time;
+    this._date = data.date;
+    this._dateDue = data.dateDue;
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
   }
@@ -43,6 +45,8 @@ class Point extends Component {
     this._price = data.price;
     this._offers = data.offers;
     this._time = data.time;
+    this._date = data.date;
+    this._dateDue = data.dateDue;
   }
 
   get template() {

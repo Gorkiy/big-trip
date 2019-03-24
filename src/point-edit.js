@@ -1,5 +1,5 @@
 import Component from './component.js';
-import {types} from './make-trip-point.js';
+import {types, getTime} from './make-trip-point.js';
 import flatpickr from 'flatpickr';
 
 class PointEdit extends Component {
@@ -16,6 +16,8 @@ class PointEdit extends Component {
     this._month = data.month;
     this._uniqueDay = data.uniqueDay;
     this._time = data.time;
+    this._date = data.date;
+    this._dateDue = data.dateDue;
     this._onSubmit = null;
     this._onDelete = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
@@ -91,10 +93,20 @@ class PointEdit extends Component {
 
   _setTime() {
     flatpickr(this._element.querySelector(`.point__time > .point__input`), {
-      'enableTime': true,
-      'noCalendar': true,
-      'time_24hr': true,
-      'defaultDate': this.date.time.from
+      mode: `range`,
+      // dateFormat: `d-m`,
+      defaultDate: [this._date, this._dateDue],
+      enableTime: true,
+      dateFormat: `H:i`,
+      locale: {rangeSeparator: ` — `},
+      onChange(selectedDates) {
+        this._date = selectedDates[0];
+        this._dateDue = selectedDates[1];
+        if (this._date && this._dateDue) {
+          this._time = getTime(this._date, this._dateDue);
+        }
+
+      },
     });
   }
 
@@ -129,6 +141,8 @@ class PointEdit extends Component {
     this._description = data.description;
     this._price = data.price;
     this._time = data.time;
+    this._date = data.date;
+    this._dateDue = data.dateDue;
   }
 
   set onSubmit(fn) {
@@ -192,7 +206,7 @@ class PointEdit extends Component {
 
           <label class="point__time">
             choose time
-            <input class="point__input" type="text" value="${this.date.time.from} — ${this.date.time.due}" name="time" placeholder="00:00 — 00:00">
+            <input class="point__input" type="text" value="" name="time" placeholder="00:00 — 00:00">
           </label>
 
           <label class="point__price">

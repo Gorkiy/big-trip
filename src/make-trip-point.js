@@ -78,7 +78,7 @@ const getRandomDate = () => {
   };
 };
 
-const getTime = (date, dateDue) => {
+export const getTime = (date, dateDue) => {
   const diffMs = dateDue - date;
   const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
   const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
