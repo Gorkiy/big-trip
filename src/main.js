@@ -54,9 +54,9 @@ const filterTasks = (data, filterName) => {
     case `filter-everything`:
       return data;
     case `filter-future`:
-      return data.filter((it) => it.dateThen > Date.now());
+      return data.filter((it) => it.date > Date.now());
     case `filter-past`:
-      return data.filter((it) => it.dateThen < Date.now());
+      return data.filter((it) => it.date < Date.now());
   }
   return data;
 };
