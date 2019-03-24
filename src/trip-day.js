@@ -9,7 +9,10 @@ class TripDay {
     this._month = data[0].month;
     this._uniqueDay = data[0].uniqueDay;
     this._dayElements = ``;
+    this._recentlyDeletedId = null;
     this._element = null;
+    this._onDelete = null;
+
   }
 
   _createElement(template) {
@@ -59,18 +62,24 @@ class TripDay {
       };
 
       pointEdit.onDelete = () => {
-        this._points[i] = null; // Здесь проблема. Если после удаления, воспользоваться любым фильтром, все удаленные точки вернутся
+        this._recentlyDeletedId = this._pointsData[i].id;
+        this._points[i] = null;
+        // this._pointsData[i] = null;
         pointEdit.unrender();
-
         if (this._points.every((element) => element === null)) {
           this._element.remove();
         }
+        this._onDelete();
       };
     });
   }
 
   unrender() {
     this._element = null;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   get element() {

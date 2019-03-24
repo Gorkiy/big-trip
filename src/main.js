@@ -41,6 +41,11 @@ const renderPoints = (data) => {
   data.forEach((dayPoints) => {
     let day = new TripDay(dayPoints);
     tripPoints.appendChild(day.render());
+
+    day.onDelete = () => {
+      const pointsIndex = points.findIndex((point) => point.id === day._recentlyDeletedId);
+      points.splice(pointsIndex, 1);
+    };
   });
 };
 
