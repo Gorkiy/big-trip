@@ -48,10 +48,8 @@ const filterTasks = (data, filterName) => {
   switch (filterName) {
     case `filter-everything`:
       return data;
-
     case `filter-future`:
       return data.filter((it) => it.dateThen > Date.now());
-
     case `filter-past`:
       return data.filter((it) => it.dateThen < Date.now());
   }

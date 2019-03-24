@@ -62,10 +62,10 @@ class TripDay {
       pointEdit.onDelete = () => {
         this._points[i] = null; // Здесь проблема. Если после удаления, воспользоваться любым фильтром, все удаленные точки вернутся
         pointEdit.unrender();
-        // Также нужно делать анрендер дня целиком, если точек в дне не осталось
-        // if (this._points.length === 0) {
-        //   this._element.remove();
-        // } <-- Это не работает, потому что у нас длина остается неизменной
+
+        if(this._points.every(element => element === null)) {
+          this._element.remove();
+        }
       };
     });
   }
