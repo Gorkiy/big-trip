@@ -23,6 +23,7 @@ class PointEdit extends Component {
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
+    // this._setTime = this._setTime.bind(this);
   }
 
   _processForm(formData) {
@@ -92,7 +93,8 @@ class PointEdit extends Component {
   }
 
   _setTime() {
-    flatpickr(this._element.querySelector(`.point__time > .point__input`), {
+    const timeInput = this._element.querySelector(`.point__time > .point__input`);
+    flatpickr(timeInput, {
       mode: `range`,
       // dateFormat: `d-m`,
       defaultDate: [this._date, this._dateDue],
@@ -104,8 +106,8 @@ class PointEdit extends Component {
         this._dateDue = selectedDates[1];
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
+          // Как передать новое this._time.duration в компонент Point?
         }
-
       },
     });
   }
@@ -212,7 +214,7 @@ class PointEdit extends Component {
 
           <label class="point__time">
             choose time
-            <input class="point__input" type="text" value="" name="time" placeholder="00:00 — 00:00">
+            <input class="point__input" type="text" value="${this._time.from} — ${this._time.due}" name="time" placeholder="00:00 — 00:00">
           </label>
 
           <label class="point__price">
@@ -261,13 +263,9 @@ class PointEdit extends Component {
           </section>
           <section class="point__destination">
             <h3 class="point__details-title">Destination</h3>
-            <p class="point__destination-text">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+            <p class="point__destination-text">${this._description}</p>
             <div class="point__destination-images">
-              <img src="http://picsum.photos/330/140?r=123" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/300/200?r=1234" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/300/100?r=12345" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/200/300?r=123456" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/100/300?r=1234567" alt="picture from place" class="point__destination-image">
+              <img src="${this._picture}" alt="picture from place" class="point__destination-image">
             </div>
           </section>
           <input type="hidden" class="point__total-price" name="total-price" value="">

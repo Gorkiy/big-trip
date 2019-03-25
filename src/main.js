@@ -144,6 +144,10 @@ const getChartsData = (data) => {
 };
 
 const renderCharts = () => {
+
+  const transChartCanvas = document.querySelector(`.statistic__transport`);
+  const moneyChartCanvas = document.querySelector(`.statistic__money`);
+
   if (chart.transportChart !== null) {
     chart.transportChart.destroy();
   }
@@ -152,8 +156,8 @@ const renderCharts = () => {
   }
 
   getChartsData(points);
-  chart.generateTransportChart(document.querySelector(`.statistic__transport`), chartData.transportLabels, chartData.transportFreq);
-  chart.generateMoneyChart(document.querySelector(`.statistic__money`), chartData.typeLabels, chartData.cost);
+  chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
+  chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
   chart.moneyChart.height = chartData.moneyChartHeight;
   chart.transportChart.height = chartData.transportChartHeight;
 };
