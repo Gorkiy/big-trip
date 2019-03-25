@@ -5,6 +5,13 @@ import Filter from './filter.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
+
+const tableButton = document.querySelector(`.view-switch__item:nth-child(1)`);
+const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
+const main = document.querySelector(`.main`);
+const statistic = document.querySelector(`.statistic`);
+
+
 let pointsByDay = new Map();
 export let points = [];
 let filtersRawData = [
@@ -12,6 +19,22 @@ let filtersRawData = [
   makeFilterData(`future`, `filter-future`),
   makeFilterData(`past`, `filter-past`),
 ];
+
+statsButton.addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tableButton.classList.toggle(`view-switch__item--active`);
+  statsButton.classList.toggle(`view-switch__item--active`);
+  main.classList.toggle(`visually-hidden`);
+  statistic.classList.toggle(`visually-hidden`);
+});
+
+tableButton.addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tableButton.classList.toggle(`view-switch__item--active`);
+  statsButton.classList.toggle(`view-switch__item--active`);
+  main.classList.toggle(`visually-hidden`);
+  statistic.classList.toggle(`visually-hidden`);
+});
 
 // Генерация входящих данных с массивом объектов-точек
 const getPoints = (amount) => {
