@@ -181,6 +181,12 @@ class PointEdit extends Component {
 
                 <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="flight" ${this._type === `Flight` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
+
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-ship" name="travel-way" value="ship" ${this._type === `Ship` && `checked`}>
+                <label class="travel-way__select-label" for="travel-way-ship">🛳 ship</label>
+
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-drive" name="travel-way" value="drive" ${this._type === `Drive` && `checked`}>
+                <label class="travel-way__select-label" for="travel-way-drive">🚗 drive</label>
               </div>
 
               <div class="travel-way__select-group">

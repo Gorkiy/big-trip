@@ -1,132 +1,166 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-// export const getDefaultDateRange = () => {
-//   let fromDate = new Date();
-//   let dueDate = new Date();
-//   const daysOverMonday = fromDate.getDay() - 1;
-//   const daysBeforeSunday = 7 - fromDate.getDay();
-//
-//   fromDate.setDate(fromDate.getDate() - daysOverMonday);
-//   dueDate.setDate(dueDate.getDate() + daysBeforeSunday);
-//   return [fromDate, dueDate];
-// };
+export const typeToChartLabel = (type) => {
+  switch (type) {
+    case `Taxi`:
+      return `🚕 RIDE`;
+    case `Flight`:
+      return `✈️ FLY`;
+    case `Ship`:
+      return `🛳️ SAIL`;
+    case `Drive`:
+      return `🚗 DRIVE`;
+    case `Bus`:
+      return `🚗 DRIVE`;
+    case `Train`:
+      return `🚂 TRAIN`;
+    case `Check-in`:
+      return `🏨 STAY`;
+    case `Sightseeing`:
+      return `🏛️ LOOK`;
+    default:
+      return type + `OTHER`;
+  }
+};
 
 export const chart = {
-  colorChart: null,
-  tagsChart: null,
+  transportChart: null,
+  moneyChart: null,
 
-  generateColorsChart(container, colorLabels, colorRepeats, hexColors) {
-    this.colorChart = new Chart(container, {
+  generateTransportChart(container, transportLabels, transportFreq) {
+    this.transportChart = new Chart(container, {
       plugins: [ChartDataLabels],
-      type: `pie`,
+      type: `horizontalBar`,
       data: {
-        labels: colorLabels,
+        labels: transportLabels,
         datasets: [{
-          data: colorRepeats,
-          backgroundColor: hexColors
+          data: transportFreq,
+          backgroundColor: `#ffffff`,
+          hoverBackgroundColor: `#ffffff`,
+          anchor: `start`
         }]
       },
       options: {
         plugins: {
           datalabels: {
-            display: false
+            font: {
+              size: 13
+            },
+            color: `#000000`,
+            anchor: `end`,
+            align: `start`,
+            formatter: (val) => `${val}x`
           }
-        },
-        tooltips: {
-          callbacks: {
-            label: (tooltipItem, data) => {
-              const allData = data.datasets[tooltipItem.datasetIndex].data;
-              const tooltipData = allData[tooltipItem.index];
-              const total = allData.reduce((acc, it) => acc + parseFloat(it));
-              const tooltipPercentage = Math.round((tooltipData / total) * 100);
-              return `${tooltipData} TASKS — ${tooltipPercentage}%`;
-            }
-          },
-          displayColors: false,
-          backgroundColor: `#ffffff`,
-          bodyFontColor: `#000000`,
-          borderColor: `#000000`,
-          borderWidth: 1,
-          cornerRadius: 0,
-          xPadding: 15,
-          yPadding: 15
         },
         title: {
           display: true,
-          text: `DONE BY: COLORS`,
-          fontSize: 16,
-          fontColor: `#000000`
+          text: `TRANSPORT`,
+          fontColor: `#000000`,
+          fontSize: 23,
+          position: `left`
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              fontColor: `#000000`,
+              padding: 5,
+              fontSize: 13,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            barThickness: 44,
+          }],
+          xAxes: [{
+            ticks: {
+              display: false,
+              beginAtZero: true,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            minBarLength: 50
+          }],
         },
         legend: {
-          position: `left`,
-          labels: {
-            boxWidth: 15,
-            padding: 25,
-            fontStyle: 500,
-            fontColor: `#000000`,
-            fontSize: 13
-          }
+          display: false
+        },
+        tooltips: {
+          enabled: false,
         }
       }
     });
-    return this.colorChart;
+    return this.transportChart;
   },
 
-  generateTagsChart(container, tags, tagRepeats) {
-    this.tagsChart = new Chart(container, {
+  generateMoneyChart(container, typeLabels, cost) {
+    this.moneyChart = new Chart(container, {
       plugins: [ChartDataLabels],
-      type: `pie`,
+      type: `horizontalBar`,
       data: {
-        labels: tags,
+        labels: typeLabels,
         datasets: [{
-          data: tagRepeats,
-          backgroundColor: [`#ff3cb9`, `#ffe125`, `#0c5cdd`, `#000000`, `#31b55c`]
+          data: cost,
+          backgroundColor: `#ffffff`,
+          hoverBackgroundColor: `#ffffff`,
+          anchor: `start`
         }]
       },
       options: {
         plugins: {
           datalabels: {
-            display: false
+            font: {
+              size: 13
+            },
+            color: `#000000`,
+            anchor: `end`,
+            align: `start`,
+            formatter: (val) => `€ ${val}`
           }
-        },
-        tooltips: {
-          callbacks: {
-            label: (tooltipItem, data) => {
-              const allData = data.datasets[tooltipItem.datasetIndex].data;
-              const tooltipData = allData[tooltipItem.index];
-              const total = allData.reduce((acc, it) => acc + parseFloat(it));
-              const tooltipPercentage = Math.round((tooltipData / total) * 100);
-              return `${tooltipData} TASKS — ${tooltipPercentage}%`;
-            }
-          },
-          displayColors: false,
-          backgroundColor: `#ffffff`,
-          bodyFontColor: `#000000`,
-          borderColor: `#000000`,
-          borderWidth: 1,
-          cornerRadius: 0,
-          xPadding: 15,
-          yPadding: 15
         },
         title: {
           display: true,
-          text: `DONE BY: TAGS`,
-          fontSize: 16,
-          fontColor: `#000000`
+          text: `MONEY`,
+          fontColor: `#000000`,
+          fontSize: 23,
+          position: `left`
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              fontColor: `#000000`,
+              padding: 5,
+              fontSize: 13,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            barThickness: 44,
+          }],
+          xAxes: [{
+            ticks: {
+              display: false,
+              beginAtZero: true,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            minBarLength: 50
+          }],
         },
         legend: {
-          position: `left`,
-          labels: {
-            boxWidth: 15,
-            padding: 25,
-            fontStyle: 500,
-            fontColor: `#000000`,
-            fontSize: 13
-          }
+          display: false
+        },
+        tooltips: {
+          enabled: false,
         }
       }
     });
-    return this.tagsChart;
+    return this.moneyChart;
   }
 };
