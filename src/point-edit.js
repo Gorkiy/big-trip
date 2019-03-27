@@ -23,7 +23,6 @@ class PointEdit extends Component {
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
-    // this._setTime = this._setTime.bind(this);
   }
 
   _processForm(formData) {
@@ -68,7 +67,6 @@ class PointEdit extends Component {
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
     const formData = new FormData(this._element.querySelector(`.point > form`));
-    // console.log([...formData.entries()]);
     const newData = this._processForm(formData);
     if (typeof this._onSubmit === `function`) {
       this._onSubmit(newData);
@@ -93,16 +91,29 @@ class PointEdit extends Component {
   }
 
   _setTime() {
-    const timeInput = this._element.querySelector(`.point__time > .point__input`);
-    flatpickr(timeInput, {
-      mode: `range`,
-      defaultDate: [this._date, this._dateDue],
-      enableTime: true,
-      dateFormat: `H:i`,
-      locale: {rangeSeparator: ` — `},
-      onChange: (selectedDates) => {
+    const dateStart = this._element.querySelector(`.point__time input[name="date-start"]`);
+    const dateEnd = this._element.querySelector(`.point__time input[name="date-end"]`);
+
+    flatpickr(dateStart, {
+      'defaultDate': [this._date],
+      'enableTime': true,
+      'time_24hr': true,
+      'dateFormat': `H:i`,
+      'onChange': (selectedDates) => {
         this._date = selectedDates[0];
-        this._dateDue = selectedDates[1];
+        if (this._date && this._dateDue) {
+          this._time = getTime(this._date, this._dateDue);
+        }
+      },
+    });
+
+    flatpickr(dateEnd, {
+      'defaultDate': [this._dateDue],
+      'enableTime': true,
+      'time_24hr': true,
+      'dateFormat': `H:i`,
+      'onChange': (selectedDates) => {
+        this._dateDue = selectedDates[0];
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
         }
@@ -212,7 +223,8 @@ class PointEdit extends Component {
 
           <label class="point__time">
             choose time
-            <input class="point__input" type="text" value="${this._time.from} — ${this._time.due}" name="time" placeholder="00:00 — 00:00">
+            <input class="point__input" type="text" value="${this._time.from}" name="date-start" placeholder="19:00">
+            <input class="point__input" type="text" value="${this._time.due}" name="date-end" placeholder="21:00">
           </label>
 
           <label class="point__price">
