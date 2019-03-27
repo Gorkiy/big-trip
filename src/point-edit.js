@@ -1,5 +1,5 @@
 import Component from './component.js';
-import {types} from './make-trip-point.js';
+import {types, getTime} from './make-trip-point.js';
 import flatpickr from 'flatpickr';
 
 class PointEdit extends Component {
@@ -16,9 +16,14 @@ class PointEdit extends Component {
     this._month = data.month;
     this._uniqueDay = data.uniqueDay;
     this._time = data.time;
+    this._date = data.date;
+    this._dateDue = data.dateDue;
     this._onSubmit = null;
+    this._onDelete = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
+    // this._setTime = this._setTime.bind(this);
   }
 
   _processForm(formData) {
@@ -71,27 +76,10 @@ class PointEdit extends Component {
     this.update(newData);
   }
 
-  createListeners() {
-    this._element.addEventListener(`submit`, this._onSubmitButtonClick);
-    this._element.querySelector(`.travel-way__select`)
-    .addEventListener(`click`, this._onChangeType);
-
-    this._setTime();
-  }
-
-  _setTime() {
-    flatpickr(this._element.querySelector(`.point__time > .point__input`), {
-      'enableTime': true,
-      'noCalendar': true,
-      'time_24hr': true,
-      'defaultDate': this.date.time.from
-    });
-  }
-
-  removeListeners() {
-    this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
-    this._element.querySelector(`.travel-way__select`)
-    .addEventListener(`click`, this._onChangeType);
+  _onDeleteButtonClick() {
+    if (typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
   }
 
   _onChangeType(evt) {
@@ -102,6 +90,41 @@ class PointEdit extends Component {
       this._typeIcon = types[this._type];
       this._partialUpdate();
     }
+  }
+
+  _setTime() {
+    const timeInput = this._element.querySelector(`.point__time > .point__input`);
+    flatpickr(timeInput, {
+      mode: `range`,
+      defaultDate: [this._date, this._dateDue],
+      enableTime: true,
+      dateFormat: `H:i`,
+      locale: {rangeSeparator: ` — `},
+      onChange: (selectedDates) => {
+        this._date = selectedDates[0];
+        this._dateDue = selectedDates[1];
+        if (this._date && this._dateDue) {
+          this._time = getTime(this._date, this._dateDue);
+        }
+      },
+    });
+  }
+
+  createListeners() {
+    this._element.addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.travel-way__select`)
+    .addEventListener(`click`, this._onChangeType);
+    this._element.querySelector(`.point__button--delete`)
+      .addEventListener(`click`, this._onDeleteButtonClick);
+    this._setTime();
+  }
+
+  removeListeners() {
+    this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.travel-way__select`)
+    .addEventListener(`click`, this._onChangeType);
+    this._element.querySelector(`.point__button--delete`)
+      .removeEventListener(`click`, this._onDeleteButtonClick);
   }
 
   _partialUpdate() {
@@ -118,10 +141,16 @@ class PointEdit extends Component {
     this._description = data.description;
     this._price = data.price;
     this._time = data.time;
+    this._date = data.date;
+    this._dateDue = data.dateDue;
   }
 
   set onSubmit(fn) {
     this._onSubmit = fn;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   get template() {
@@ -152,6 +181,12 @@ class PointEdit extends Component {
 
                 <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="flight" ${this._type === `Flight` && `checked`}>
                 <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
+
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-ship" name="travel-way" value="ship" ${this._type === `Ship` && `checked`}>
+                <label class="travel-way__select-label" for="travel-way-ship">🛳 ship</label>
+
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-drive" name="travel-way" value="drive" ${this._type === `Drive` && `checked`}>
+                <label class="travel-way__select-label" for="travel-way-drive">🚗 drive</label>
               </div>
 
               <div class="travel-way__select-group">
@@ -177,7 +212,7 @@ class PointEdit extends Component {
 
           <label class="point__time">
             choose time
-            <input class="point__input" type="text" value="${this.date.time.from} — ${this.date.time.due}" name="time" placeholder="00:00 — 00:00">
+            <input class="point__input" type="text" value="${this._time.from} — ${this._time.due}" name="time" placeholder="00:00 — 00:00">
           </label>
 
           <label class="point__price">
@@ -188,7 +223,7 @@ class PointEdit extends Component {
 
           <div class="point__buttons">
             <button class="point__button point__button--save" type="submit">Save</button>
-            <button class="point__button" type="reset">Delete</button>
+            <button class="point__button point__button--delete" type="reset">Delete</button>
           </div>
 
           <div class="paint__favorite-wrap">
@@ -226,13 +261,9 @@ class PointEdit extends Component {
           </section>
           <section class="point__destination">
             <h3 class="point__details-title">Destination</h3>
-            <p class="point__destination-text">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+            <p class="point__destination-text">${this._description}</p>
             <div class="point__destination-images">
-              <img src="http://picsum.photos/330/140?r=123" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/300/200?r=1234" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/300/100?r=12345" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/200/300?r=123456" alt="picture from place" class="point__destination-image">
-              <img src="http://picsum.photos/100/300?r=1234567" alt="picture from place" class="point__destination-image">
+              <img src="${this._picture}" alt="picture from place" class="point__destination-image">
             </div>
           </section>
           <input type="hidden" class="point__total-price" name="total-price" value="">

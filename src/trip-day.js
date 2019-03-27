@@ -8,8 +8,11 @@ class TripDay {
     this._day = data[0].day;
     this._month = data[0].month;
     this._uniqueDay = data[0].uniqueDay;
-    this._dayItems = ``;
+    this._dayElements = ``;
+    this._recentlyDeletedId = null;
     this._element = null;
+    this._onDelete = null;
+
   }
 
   _createElement(template) {
@@ -20,17 +23,17 @@ class TripDay {
 
   render() {
     this._element = this._createElement(this.template);
-    this._dayItems = this._element.querySelector(`.trip-day__items`);
+    this._dayElements = this._element.querySelector(`.trip-day__items`);
     this.build();
 
     this._points.map((curPoint) => {
-      this._dayItems.appendChild(curPoint.element);
+      this._dayElements.appendChild(curPoint.element);
     });
     return this._element;
   }
 
   build() {
-    for (let pointData of this._pointsData) {
+    this._pointsData.forEach((pointData, i) => {
       let point = new Point(pointData);
       let pointEdit = new PointEdit(pointData);
       point.render();
@@ -40,7 +43,7 @@ class TripDay {
 
       point.onEdit = () => {
         pointEdit.render();
-        this._dayItems.replaceChild(pointEdit.element, point.element);
+        this._dayElements.replaceChild(pointEdit.element, point.element);
         point.unrender();
       };
 
@@ -50,19 +53,33 @@ class TripDay {
         pointData.typeIcon = newObject.typeIcon;
         pointData.description = newObject.description;
         pointData.price = newObject.price;
-        // pointData.offers = newObject.offers;
         pointData.time = newObject.time;
 
         point.update(pointData);
         point.render();
-        this._dayItems.replaceChild(point.element, pointEdit.element);
+        this._dayElements.replaceChild(point.element, pointEdit.element);
         pointEdit.unrender();
       };
-    }
+
+      pointEdit.onDelete = () => {
+        this._recentlyDeletedId = this._pointsData[i].id;
+        this._points[i] = null;
+        // this._pointsData[i] = null;
+        pointEdit.unrender();
+        if (this._points.every((element) => element === null)) {
+          this._element.remove();
+        }
+        this._onDelete();
+      };
+    });
   }
 
   unrender() {
     this._element = null;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   get element() {

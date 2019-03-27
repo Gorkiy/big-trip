@@ -3,14 +3,16 @@ export const types = {
   'Taxi': `🚕`,
   'Bus': `🚌`,
   'Train': `🚂`,
-  // 'Ship': `🛳️`,
+  'Ship': `🛳️`,
   // 'Transport': `🚊`,
-  // 'Drive': `🚗`,
+  'Drive': `🚗`,
   'Flight': `✈️`,
   'Check-in': `🏨`,
   'Sightseeing': `🏛`,
   // 'Restaurant': `🍴`,
 };
+let id = 0;
+const generateNewId = () => id++;
 
 const description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
 
@@ -59,23 +61,28 @@ const getRandomOffers = (offersArr) => {
 const getRandomDate = () => {
   let date = new Date();
   date.setDate(date.getDate() + getRandomInt(2));
+  date.setMinutes(15 * getRandomInt(4));
+  date.setHours(1 * getRandomInt(24));
   const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,
     `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
+  let dateDue = new Date(Date.parse(date) + getRandomInt(86400000));
+  dateDue.setMinutes(15 * getRandomInt(4));
 
   return {
     tripYear: (`` + date.getFullYear()).substr(-2),
     tripMonth: monthNames[date.getMonth()],
     tripDay: date.getDate().toString(),
-    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(), // Для проверки разных дат
+    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+    date,
+    dateDue
   };
 };
 
-const getTime = () => {
-  const durationMin = getRandomInt(5) * 30 + 30;
-  const duration = Math.floor(durationMin / 60) + `H ` + durationMin % 60;
+export const getTime = (date, dateDue) => {
+  const diffMs = dateDue - date;
+  const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+  const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
 
-  const date = new Date();
-  date.setHours(getRandomInt(24), getRandomInt(2) * 30);
   let hours = date.getHours();
   let minutes = date.getMinutes();
   if (hours < 10) {
@@ -85,14 +92,8 @@ const getTime = () => {
     minutes += `0`;
   }
 
-  const dueDate = new Date(date);
-  dueDate.setMinutes(dueDate.getMinutes() + durationMin);
-  let dueHours = dueDate.getHours();
-  let dueMinutes = dueDate.getMinutes();
-
-  // const timeDifference = dueDate - date;
-  // let duration = Math.round(((timeDifference % 86400000) % 3600000) / 60000);
-
+  let dueHours = dateDue.getHours();
+  let dueMinutes = dateDue.getMinutes();
   if (dueHours < 10) {
     dueHours = `0` + dueHours;
   }
@@ -103,14 +104,16 @@ const getTime = () => {
   return {
     from: hours + `:` + minutes,
     due: dueHours + `:` + dueMinutes,
-    duration,
+    duration: diffHrs + `H ` + diffMins
   };
 };
 
 export const makeTripPoint = () => {
   let randomType = getRandomType(types);
   let randomDate = getRandomDate();
+
   return {
+    id: generateNewId(),
     city: cities[getRandomInt(cities.length)],
     type: randomType[0],
     typeIcon: randomType[1],
@@ -121,6 +124,8 @@ export const makeTripPoint = () => {
     day: randomDate.tripDay,
     month: randomDate.tripMonth + ` ` + randomDate.tripYear,
     uniqueDay: randomDate.uniqueDay,
-    time: getTime(),
+    date: randomDate.date,
+    dateDue: randomDate.dateDue,
+    time: getTime(randomDate.date, randomDate.dateDue),
   };
 };
