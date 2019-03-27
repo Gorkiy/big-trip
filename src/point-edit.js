@@ -5,6 +5,7 @@ import flatpickr from 'flatpickr';
 class PointEdit extends Component {
   constructor(data) {
     super();
+    this._id = data.id;
     this._city = data.city;
     this._type = data.type;
     this._typeIcon = data.typeIcon;
@@ -156,6 +157,10 @@ class PointEdit extends Component {
     this._dateDue = data.dateDue;
   }
 
+  _generateOfferId(offerTitle) {
+    return offerTitle.toLowerCase().split(` `).join(`-`);
+  }
+
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
@@ -247,35 +252,24 @@ class PointEdit extends Component {
         <section class="point__details">
           <section class="point__offers">
             <h3 class="point__details-title">offers</h3>
-
             <div class="point__offers-wrap">
-              <input class="point__offers-input visually-hidden" type="checkbox" id="add-luggage" name="offer" value="add-luggage">
-              <label for="add-luggage" class="point__offers-label">
-                <span class="point__offer-service">Add luggage</span> + €<span class="point__offer-price">30</span>
-              </label>
-
-              <input class="point__offers-input visually-hidden" type="checkbox" id="switch-to-comfort-class" name="offer" value="switch-to-comfort-class">
-              <label for="switch-to-comfort-class" class="point__offers-label">
-                <span class="point__offer-service">Switch to comfort class</span> + €<span class="point__offer-price">100</span>
-              </label>
-
-              <input class="point__offers-input visually-hidden" type="checkbox" id="add-meal" name="offer" value="add-meal">
-              <label for="add-meal" class="point__offers-label">
-                <span class="point__offer-service">Add meal </span> + €<span class="point__offer-price">15</span>
-              </label>
-
-              <input class="point__offers-input visually-hidden" type="checkbox" id="choose-seats" name="offer" value="choose-seats">
-              <label for="choose-seats" class="point__offers-label">
-                <span class="point__offer-service">Choose seats</span> + €<span class="point__offer-price">5</span>
-              </label>
-            </div>
+            ${ this._offers.map((offer) =>
+              `<input class="point__offers-input visually-hidden" type="checkbox" id="${this._generateOfferId(offer.title)}" name="offer" value="${this._generateOfferId(offer.title)}" ${offer.accepted && `checked`}>
+              <label for="${this._generateOfferId(offer.title)}" class="point__offers-label">
+                <span class="point__offer-service">${offer.title || ``}</span> + €<span class="point__offer-price">${offer.price}</span>
+              </label>`
+                ).join(``).trim()
+              }
 
           </section>
           <section class="point__destination">
             <h3 class="point__details-title">Destination</h3>
-            <p class="point__destination-text">${this._description}</p>
+            <p class="point__destination-text">${this._description || ``}</p>
             <div class="point__destination-images">
-              <img src="${this._picture}" alt="picture from place" class="point__destination-image">
+            ${ this._picture.map((pic) =>
+              `<img src="${pic.src}" alt="${pic.description}" class="point__destination-image">`
+              ).join(``).trim()
+            }
             </div>
           </section>
           <input type="hidden" class="point__total-price" name="total-price" value="">

@@ -2,7 +2,11 @@ import {makeFilterData} from './make-filter.js';
 import {makeTripPoint} from './make-trip-point.js';
 import TripDay from './trip-day.js';
 import Filter from './filter.js';
-import {chart, typeToChartLabel} from './stats.js';
+import {chart, typeToChartLabel} from './stats.js';import API from './api.js';
+
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dg`;
+const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
@@ -65,6 +69,7 @@ const sortPointsByDay = (data) => {
     }
   }
   pointsByDay = new Map([...pointsByDay.entries()].sort());
+  console.log(pointsByDay);
 };
 
 // Отрисовка точек из отсортированной по дням базы точек
@@ -163,7 +168,21 @@ const renderCharts = () => {
 };
 
 // Temp render
-points = getPoints(7);
-sortPointsByDay(points);
-renderPoints(pointsByDay);
+// points = getPoints(7);
+// points = api.getPoints().then((points) => points);
+
+// sortPointsByDay(points);
+// renderPoints(pointsByDay);
 renderFilters(filtersRawData);
+
+api.getPoints().then((points) => {
+  console.log(points);
+})
+
+
+api.getPoints()
+  .then((points) => {
+    console.log(points);
+    sortPointsByDay(points);
+    renderPoints(pointsByDay);
+  });

@@ -3,6 +3,7 @@ import Component from './component.js';
 class Point extends Component {
   constructor(data) {
     super();
+    this._id = data.id;
     this._city = data.city;
     this._type = data.type;
     this._typeIcon = data.typeIcon;
@@ -62,7 +63,7 @@ class Point extends Component {
       <ul class="trip-point__offers">
         ${ this._offers.map((offer) =>
     `<li>
-            <button class="trip-point__offer">${offer}</button>
+            <button class="trip-point__offer">${offer.title || ``}</button>
           </li>`
   ).join(``).trim()
 }
