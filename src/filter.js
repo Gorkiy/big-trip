@@ -32,6 +32,7 @@ class Filter extends Component {
 
   createElement(template) { // Костыль. Переопределяем, чтобы инпут с лейблом были в одном родителе
     const newElement = document.createElement(`div`);
+    newElement.classList.add(`trip-filter__container`);
     newElement.innerHTML = template;
     return newElement;
   }

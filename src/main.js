@@ -107,10 +107,10 @@ function renderFilters(filtersData) {
   });
 }
 // Генерируем данные для чартов
+const transportTypes = new Set([`Taxi`, `Flight`, `Ship`, `Drive`, `Bus`, `Train`]);
+
 const getChartsData = (data) => {
-  const transportOnlyPoints = data.filter((point) => {
-    return point.type === `Taxi` || point.type === `Flight` || point.type === `Ship` || point.type === `Drive`;
-  });
+  const transportOnlyPoints = data.filter((point) => transportTypes.has(point.type));
   const transporsData = new Map();
   const costData = new Map();
   let label = ``;
@@ -156,10 +156,10 @@ const renderCharts = () => {
   }
 
   getChartsData(points);
+  moneyChartCanvas.height = chartData.moneyChartHeight;
+  transChartCanvas.height = chartData.transportChartHeight;
   chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
   chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
-  chart.moneyChart.height = chartData.moneyChartHeight;
-  chart.transportChart.height = chartData.transportChartHeight;
 };
 
 // Temp render

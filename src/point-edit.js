@@ -96,17 +96,15 @@ class PointEdit extends Component {
     const timeInput = this._element.querySelector(`.point__time > .point__input`);
     flatpickr(timeInput, {
       mode: `range`,
-      // dateFormat: `d-m`,
       defaultDate: [this._date, this._dateDue],
       enableTime: true,
       dateFormat: `H:i`,
       locale: {rangeSeparator: ` — `},
-      onChange(selectedDates) {
+      onChange: (selectedDates) => {
         this._date = selectedDates[0];
         this._dateDue = selectedDates[1];
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
-          // Как передать новое this._time.duration в компонент Point?
         }
       },
     });

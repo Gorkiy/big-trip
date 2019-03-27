@@ -146,6 +146,10 @@ a.view-switch__item--active:link {
   position: absolute;
 }
 
+.trip-filter__container {
+  display: inline-block;
+}
+
 .trip-filter__item {
   font-size: var(--font-size-smaller);
   font-weight: 800;
