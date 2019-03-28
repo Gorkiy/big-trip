@@ -27,6 +27,15 @@ class PointEdit extends Component {
     this._onChangeDestination = this._onChangeDestination.bind(this);
   }
 
+  static setDestinations(data) {
+    this._destinations = data;
+  }
+
+  static setAllOffers(data) {
+    this._allOffersData = data;
+    // console.log(this._allOffersData);
+  }
+
   _processForm(formData) {
     const entry = {
       city: ``,
@@ -86,10 +95,32 @@ class PointEdit extends Component {
     const selection = evt.target.closest(`.travel-way__select-input`);
     if (selection) {
       let typeName = selection.value;
+      let newOffers = null;
       this._type = typeName[0].toUpperCase() + typeName.slice(1);
       this._typeIcon = types[this._type];
+
+      PointEdit._allOffersData.forEach((offersByType) => {
+        if (offersByType.type === typeName) {
+          newOffers = offersByType.offers;
+        }
+      });
+
+      if (newOffers) {
+        this._offers = this._getNewOffers(this._offers, newOffers);
+        console.log(this._offers);
+      }
       this._partialUpdate();
     }
+  }
+
+  _getNewOffers(oldOffers, newOffers) {
+    let result = newOffers;
+    result.forEach((offer) => {
+      offer.title = offer.name;
+      delete offer.name;
+      offer.accepted = false;
+    })
+    return result;
   }
 
   _onChangeDestination() {
@@ -163,6 +194,7 @@ class PointEdit extends Component {
   _partialUpdate() {
     this.removeListeners();
     const oldElement = this._element;
+    console.log(this._offers);
     this.render();
     oldElement.parentNode.replaceChild(this._element, oldElement);
   }
@@ -188,10 +220,6 @@ class PointEdit extends Component {
 
   set onDelete(fn) {
     this._onDelete = fn;
-  }
-
-  static setDestinations(data) {
-    this._destinations = data;
   }
 
   get template() {

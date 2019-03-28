@@ -44,6 +44,15 @@ const API = class {
       });
   }
 
+  getOffers() {
+    return this._load({url: `offers`})
+      .then(toJSON)
+      // .then(ModelPoint.parsePoints)
+      .catch((err) => {
+        console.log(`get points error ${err}`)
+      });
+  }
+
   createPoint({point}) {
     return this._load({
       url: `points`,

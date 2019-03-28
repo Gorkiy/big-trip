@@ -168,7 +168,7 @@ const renderCharts = () => {
   chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
 };
 
-// Re der
+// Render
 renderFilters(filtersRawData);
 
 // api.getPoints()
@@ -177,9 +177,12 @@ renderFilters(filtersRawData);
 //     renderPoints(pointsByDay);
 //   });
 
-Promise.all([api.getPoints(), api.getDestinations()])
-  .then(([points, destinations]) => {
+Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
+  .then(([points, destinations, offers]) => {
+    console.log(offers);
     PointEdit.setDestinations(destinations);
+    PointEdit.setAllOffers(offers);
     sortPointsByDay(points);
     renderPoints(pointsByDay);
+    // console.log(offers);
   })
