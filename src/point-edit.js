@@ -6,6 +6,7 @@ class PointEdit extends Component {
   constructor(data) {
     super();
     this._id = data.id;
+    // this._destinations = [];
     this._city = data.city;
     this._type = data.type;
     this._typeIcon = data.typeIcon;
@@ -169,6 +170,10 @@ class PointEdit extends Component {
     this._onDelete = fn;
   }
 
+  static setDestinations(data) {
+    this._destinations = data;
+  }
+
   get template() {
     return `
     <article class="point">
@@ -219,10 +224,10 @@ class PointEdit extends Component {
             <label class="point__destination-label" for="destination">${this._type} to</label>
             <input class="point__destination-input" list="destination-select" id="destination" value="${this._city}" name="destination">
             <datalist id="destination-select">
-              <option value="airport"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
-              <option value="hotel"></option>
+            ${ PointEdit._destinations.map((dest) =>
+              `<option value="${dest.name}"></option>`
+                ).join(``).trim()
+              }
             </datalist>
           </div>
 

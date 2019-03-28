@@ -61,11 +61,13 @@ class Point extends Component {
       </p>
       <p class="trip-point__price">&euro;&nbsp;${this._price}</p>
       <ul class="trip-point__offers">
-        ${ this._offers.map((offer) =>
-    `<li>
-            <button class="trip-point__offer">${offer.title || ``}</button>
-          </li>`
-  ).join(``).trim()
+        ${ this._offers.map((offer) => {
+          if (offer.accepted) {
+            return `<li>
+                    <button class="trip-point__offer">${offer.title || ``}</button>
+                  </li>`
+          }
+  }).join(``).trim()
 }
       </ul>
     </article>`.trim();

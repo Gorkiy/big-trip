@@ -1,7 +1,5 @@
 import ModelPoint from './model-point.js';
 
-// ModelPoint.parsePoints();
-
 const Method = {
   GET: `GET`,
   POST: `POST`,
@@ -32,7 +30,18 @@ const API = class {
     return this._load({url: `points`})
       .then(toJSON)
       .then(ModelPoint.parsePoints)
-      .catch(console.log('get points error'));
+      .catch((err) => {
+        console.log(`get points error ${err}`)
+      });
+  }
+
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then(toJSON)
+      // .then(ModelPoint.parsePoints)
+      .catch((err) => {
+        console.log(`get points error ${err}`)
+      });
   }
 
   createPoint({point}) {
