@@ -6,7 +6,6 @@ class PointEdit extends Component {
   constructor(data) {
     super();
     this._id = data.id;
-    // this._destinations = [];
     this._city = data.city;
     this._type = data.type;
     this._typeIcon = data.typeIcon;
@@ -25,6 +24,7 @@ class PointEdit extends Component {
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
+    this._onChangeDestination = this._onChangeDestination.bind(this);
   }
 
   _processForm(formData) {
@@ -92,6 +92,22 @@ class PointEdit extends Component {
     }
   }
 
+  _onChangeDestination() {
+    const destInput = this._element.querySelector(`.point__destination-input`);
+    let newDestination;
+    if (PointEdit._destinations.some((destination) => destInput.value === destination.name)) {
+      PointEdit._destinations.forEach((destination) => {
+        if (destination.name === destInput.value) {
+          newDestination = destination;
+        }
+      });
+      this._city = newDestination.name;
+      this._description = newDestination.description;
+      this._picture = newDestination.pictures;
+      this._partialUpdate();
+    }
+  }
+
   _setTime() {
     const dateStart = this._element.querySelector(`.point__time input[name="date-start"]`);
     const dateEnd = this._element.querySelector(`.point__time input[name="date-end"]`);
@@ -126,18 +142,22 @@ class PointEdit extends Component {
   createListeners() {
     this._element.addEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.travel-way__select`)
-    .addEventListener(`click`, this._onChangeType);
+      .addEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.point__button--delete`)
       .addEventListener(`click`, this._onDeleteButtonClick);
     this._setTime();
+    this._element.querySelector(`.point__destination-input`)
+      .addEventListener(`change`, this._onChangeDestination);
   }
 
   removeListeners() {
     this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.travel-way__select`)
-    .addEventListener(`click`, this._onChangeType);
+      .removeEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.point__button--delete`)
       .removeEventListener(`click`, this._onDeleteButtonClick);
+    this._element.querySelector(`.point__destination-input`)
+      .removeEventListener(`change`, this._onChangeDestination);
   }
 
   _partialUpdate() {
