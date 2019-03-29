@@ -29,28 +29,20 @@ const API = class {
   getPoints() {
     return this._load({url: `points`})
       .then(toJSON)
-      .then(ModelPoint.parsePoints)
-      .catch((err) => {
-        console.log(`get points error ${err}`)
-      });
+      .then(ModelPoint.parsePoints);
+    // .catch((err) => {
+    //   console.log(`get points error ${err}`)
+    // });
   }
 
   getDestinations() {
     return this._load({url: `destinations`})
-      .then(toJSON)
-      // .then(ModelPoint.parsePoints)
-      .catch((err) => {
-        console.log(`get points error ${err}`)
-      });
+      .then(toJSON);
   }
 
   getOffers() {
     return this._load({url: `offers`})
-      .then(toJSON)
-      // .then(ModelPoint.parsePoints)
-      .catch((err) => {
-        console.log(`get points error ${err}`)
-      });
+      .then(toJSON);
   }
 
   createPoint({point}) {
@@ -83,11 +75,11 @@ const API = class {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
-      .then(checkStatus)
-      .catch((err) => {
-        console.error(`fetch error: ${err}`);
-        throw err;
-      });
+      .then(checkStatus);
+    // .catch((err) => {
+    //   console.error(`fetch error: ${err}`);
+    //   throw err;
+    // });
   }
 };
 

@@ -1,5 +1,3 @@
-// import {getTime, types, formatDate} from './make-trip-point.js';
-
 const allTypes = {
   'taxi': {
     name: `Taxi`,
@@ -88,9 +86,9 @@ class ModelPoint {
       tripDay: date.getDate().toString(),
       uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
     };
-  };
+  }
 
-  _getTime (date, dateDue) {
+  _getTime(date, dateDue) {
     const diffMs = dateDue - date;
     const diffHrs = Math.floor(diffMs / 3600000);
     // const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
@@ -119,7 +117,7 @@ class ModelPoint {
       due: dueHours + `:` + dueMinutes,
       duration: diffHrs + `H ` + diffMins
     };
-  };
+  }
 
   static parsePoint(data) {
     return new ModelPoint(data);
@@ -131,22 +129,3 @@ class ModelPoint {
 }
 
 export default ModelPoint;
-
-
-
-  // return {
-  //   id: generateNewId(),
-  //   city: cities[getRandomInt(cities.length)],
-  //   type: randomType[0],
-  //   typeIcon: randomType[1],
-  //   description: getDescription(description),
-  //   picture: `//picsum.photos/300/150?r=${Math.random()}`,
-  //   price: (20 + getRandomInt(8) * 10),
-  //   offers: getRandomOffers(offers),
-  //   day: randomDate.tripDay,
-  //   month: randomDate.tripMonth + ` ` + randomDate.tripYear,
-  //   uniqueDay: randomDate.uniqueDay,
-  //   date: randomDate.date,
-  //   dateDue: randomDate.dateDue,
-  //   time: getTime(randomDate.date, randomDate.dateDue),
-  // };

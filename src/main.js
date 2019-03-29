@@ -1,5 +1,4 @@
 import {makeFilterData} from './make-filter.js';
-import {makeTripPoint} from './make-trip-point.js';
 import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
@@ -51,14 +50,14 @@ const chartData = {
 };
 
 // Генерация входящих данных с массивом объектов-точек
-const getPoints = (amount) => {
-  let result = [];
-  for (let i = 0; i < amount; i++) {
-    let pointData = makeTripPoint();
-    result.push(pointData);
-  }
-  return result;
-};
+// const getPoints = (amount) => {
+//   let result = [];
+//   for (let i = 0; i < amount; i++) {
+//     let pointData = makeTripPoint();
+//     result.push(pointData);
+//   }
+//   return result;
+// };
 
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
@@ -171,18 +170,11 @@ const renderCharts = () => {
 // Render
 renderFilters(filtersRawData);
 
-// api.getPoints()
-//   .then((points) => {
-//     sortPointsByDay(points);
-//     renderPoints(pointsByDay);
-//   });
-
 Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
-  .then(([points, destinations, offers]) => {
+  .then(([pointsData, destinations, offers]) => {
     console.log(offers);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
-    sortPointsByDay(points);
+    sortPointsByDay(pointsData);
     renderPoints(pointsByDay);
-    // console.log(offers);
-  })
+  });

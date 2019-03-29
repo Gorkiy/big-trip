@@ -1,3 +1,8 @@
+// 1. Ивент хендлер для фейворитс
+// 2. Ивент хендлер для кликов по инстансу оффера
+// 3. Исправить ошибку в _onChangeType — неправильная обработка при нескольких открытых карточках
+
+
 import Component from './component.js';
 import {types, getTime} from './make-trip-point.js';
 import flatpickr from 'flatpickr';
@@ -19,12 +24,14 @@ class PointEdit extends Component {
     this._time = data.time;
     this._date = data.date;
     this._dateDue = data.dateDue;
+    this._isFavorite = data.isFavorite;
     this._onSubmit = null;
     this._onDelete = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
     this._onChangeDestination = this._onChangeDestination.bind(this);
+    this._onFavoriteClick = this._onFavoriteClick.bind(this);
   }
 
   static setDestinations(data) {
@@ -33,7 +40,6 @@ class PointEdit extends Component {
 
   static setAllOffers(data) {
     this._allOffersData = data;
-    // console.log(this._allOffersData);
   }
 
   _processForm(formData) {
@@ -53,6 +59,10 @@ class PointEdit extends Component {
     }
 
     entry.typeIcon = types[entry.type];
+    entry.description = this._description;
+    entry.offers = this._offers;
+    entry.picture = this._picture;
+    entry.isFavorite = data.isFavorite;
     return entry;
   }
 
@@ -95,32 +105,26 @@ class PointEdit extends Component {
     const selection = evt.target.closest(`.travel-way__select-input`);
     if (selection) {
       let typeName = selection.value;
-      let newOffers = null;
       this._type = typeName[0].toUpperCase() + typeName.slice(1);
       this._typeIcon = types[this._type];
 
       PointEdit._allOffersData.forEach((offersByType) => {
         if (offersByType.type === typeName) {
-          newOffers = offersByType.offers;
+          this._offers = this._convertOffers(offersByType.offers);
         }
       });
-
-      if (newOffers) {
-        this._offers = this._getNewOffers(this._offers, newOffers);
-        console.log(this._offers);
-      }
       this._partialUpdate();
     }
   }
 
-  _getNewOffers(oldOffers, newOffers) {
-    let result = newOffers;
-    result.forEach((offer) => {
-      offer.title = offer.name;
-      delete offer.name;
-      offer.accepted = false;
-    })
-    return result;
+  _convertOffers(offers) {
+    return offers.map((offer) => {
+      return {
+        title: offer.name,
+        price: offer.price,
+        accepted: false
+      }
+    });
   }
 
   _onChangeDestination() {
@@ -136,6 +140,15 @@ class PointEdit extends Component {
       this._description = newDestination.description;
       this._picture = newDestination.pictures;
       this._partialUpdate();
+    }
+  }
+
+  _onFavoriteClick() {
+    const favInput = this._element.querySelector(`.point__favorite-input`);
+    if (favInput.checked) {
+      this._isFavorite = !this._isFavorite;
+    } else {
+      this._isFavorite = !this._isFavorite;
     }
   }
 
@@ -179,6 +192,8 @@ class PointEdit extends Component {
     this._setTime();
     this._element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onChangeDestination);
+    this._element.querySelector(`.point__favorite-input`)
+      .addEventListener(`click`, this._onFavoriteClick);
   }
 
   removeListeners() {
@@ -189,12 +204,13 @@ class PointEdit extends Component {
       .removeEventListener(`click`, this._onDeleteButtonClick);
     this._element.querySelector(`.point__destination-input`)
       .removeEventListener(`change`, this._onChangeDestination);
+    this._element.querySelector(`.point__favorite-input`)
+      .removeEventListener(`click`, this._onFavoriteClick);
   }
 
   _partialUpdate() {
     this.removeListeners();
     const oldElement = this._element;
-    console.log(this._offers);
     this.render();
     oldElement.parentNode.replaceChild(this._element, oldElement);
   }
@@ -205,12 +221,15 @@ class PointEdit extends Component {
     this._typeIcon = data.typeIcon;
     this._description = data.description;
     this._price = data.price;
+    this._picture = data.picture;
+    this._offers = data.offers;
     this._time = data.time;
     this._date = data.date;
     this._dateDue = data.dateDue;
+    this._isFavorite = data.isFavorite;
   }
 
-  _generateOfferId(offerTitle) {
+  static generateOfferId(offerTitle) {
     return offerTitle.toLowerCase().split(` `).join(`-`);
   }
 
@@ -229,7 +248,7 @@ class PointEdit extends Component {
         <header class="point__header">
           <label class="point__date">
             choose day
-            <input class="point__input" type="text" placeholder="${this.date.month}" name="day">
+            <input class="point__input" type="text" placeholder="${this.date.month}" value="${this.date.month}" name="day">
           </label>
 
           <div class="travel-way">
@@ -272,10 +291,10 @@ class PointEdit extends Component {
             <label class="point__destination-label" for="destination">${this._type} to</label>
             <input class="point__destination-input" list="destination-select" id="destination" value="${this._city}" name="destination">
             <datalist id="destination-select">
-            ${ PointEdit._destinations.map((dest) =>
-              `<option value="${dest.name}"></option>`
-                ).join(``).trim()
-              }
+  ${ PointEdit._destinations.map((dest) =>
+    `<option value="${dest.name}"></option>`
+  ).join(``).trim()
+}
             </datalist>
           </div>
 
@@ -297,7 +316,7 @@ class PointEdit extends Component {
           </div>
 
           <div class="paint__favorite-wrap">
-            <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite">
+            <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite" ${this._isFavorite && `checked`}>
             <label class="point__favorite" for="favorite">favorite</label>
           </div>
         </header>
@@ -307,22 +326,21 @@ class PointEdit extends Component {
             <h3 class="point__details-title">offers</h3>
             <div class="point__offers-wrap">
             ${ this._offers.map((offer) =>
-              `<input class="point__offers-input visually-hidden" type="checkbox" id="${this._generateOfferId(offer.title)}" name="offer" value="${this._generateOfferId(offer.title)}" ${offer.accepted && `checked`}>
-              <label for="${this._generateOfferId(offer.title)}" class="point__offers-label">
-                <span class="point__offer-service">${offer.title || ``}</span> + €<span class="point__offer-price">${offer.price}</span>
+    `<input class="point__offers-input visually-hidden" type="checkbox" id="${PointEdit.generateOfferId(offer.title)}" name="offer" value="${PointEdit.generateOfferId(offer.title)}" ${offer.accepted && `checked`}>
+  <label for="${PointEdit.generateOfferId(offer.title)}" class="point__offers-label">
+<span class="point__offer-service">${offer.title || ``}</span> + €<span class="point__offer-price">${offer.price}</span>
               </label>`
-                ).join(``).trim()
-              }
-
+  ).join(``).trim()
+}
           </section>
           <section class="point__destination">
             <h3 class="point__details-title">Destination</h3>
             <p class="point__destination-text">${this._description || ``}</p>
             <div class="point__destination-images">
             ${ this._picture.map((pic) =>
-              `<img src="${pic.src}" alt="${pic.description}" class="point__destination-image">`
-              ).join(``).trim()
-            }
+    `<img src="${pic.src}" alt="${pic.description}" class="point__destination-image">`
+  ).join(``).trim()
+}
             </div>
           </section>
           <input type="hidden" class="point__total-price" name="total-price" value="">
