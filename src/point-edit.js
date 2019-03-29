@@ -32,6 +32,7 @@ class PointEdit extends Component {
     this._onChangeType = this._onChangeType.bind(this);
     this._onChangeDestination = this._onChangeDestination.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
+    this._onOfferClick = this._onOfferClick.bind(this);
   }
 
   static setDestinations(data) {
@@ -62,7 +63,7 @@ class PointEdit extends Component {
     entry.description = this._description;
     entry.offers = this._offers;
     entry.picture = this._picture;
-    entry.isFavorite = data.isFavorite;
+    entry.isFavorite = this._isFavorite;
     return entry;
   }
 
@@ -101,6 +102,18 @@ class PointEdit extends Component {
     }
   }
 
+  _onOfferClick(evt) {
+    const offerElement = evt.target.closest(`.point__offers-label`);
+    if (offerElement) {
+      const offerTitle = offerElement.querySelector(`span`).innerText;
+      for (let offer of this._offers) {
+        if (offerTitle === offer.title) {
+          offer.accepted = !offer.accepted;
+        }
+      }
+    }
+  }
+
   _onChangeType(evt) {
     const selection = evt.target.closest(`.travel-way__select-input`);
     if (selection) {
@@ -123,7 +136,7 @@ class PointEdit extends Component {
         title: offer.name,
         price: offer.price,
         accepted: false
-      }
+      };
     });
   }
 
@@ -194,6 +207,8 @@ class PointEdit extends Component {
       .addEventListener(`change`, this._onChangeDestination);
     this._element.querySelector(`.point__favorite-input`)
       .addEventListener(`click`, this._onFavoriteClick);
+    this._element.querySelector(`.point__offers-wrap`)
+      .addEventListener(`click`, this._onOfferClick);
   }
 
   removeListeners() {
@@ -206,6 +221,8 @@ class PointEdit extends Component {
       .removeEventListener(`change`, this._onChangeDestination);
     this._element.querySelector(`.point__favorite-input`)
       .removeEventListener(`click`, this._onFavoriteClick);
+    this._element.querySelector(`.point__offers-wrap`)
+      .addEventListener(`click`, this._onOfferClick);
   }
 
   _partialUpdate() {
@@ -229,8 +246,8 @@ class PointEdit extends Component {
     this._isFavorite = data.isFavorite;
   }
 
-  static generateOfferId(offerTitle) {
-    return offerTitle.toLowerCase().split(` `).join(`-`);
+  _generateOfferId(offer) {
+    return offer.title.replace(/[^A-Za-z]/g, ` `).toLowerCase().split(` `).join(`-`);
   }
 
   set onSubmit(fn) {
@@ -326,8 +343,8 @@ class PointEdit extends Component {
             <h3 class="point__details-title">offers</h3>
             <div class="point__offers-wrap">
             ${ this._offers.map((offer) =>
-    `<input class="point__offers-input visually-hidden" type="checkbox" id="${PointEdit.generateOfferId(offer.title)}" name="offer" value="${PointEdit.generateOfferId(offer.title)}" ${offer.accepted && `checked`}>
-  <label for="${PointEdit.generateOfferId(offer.title)}" class="point__offers-label">
+    `<input class="point__offers-input visually-hidden" type="checkbox" id="${this._generateOfferId(offer)}" name="offer" value="${this._generateOfferId(offer)}" ${offer.accepted && `checked`}>
+  <label for="${this._generateOfferId(offer)}" class="point__offers-label">
 <span class="point__offer-service">${offer.title || ``}</span> + €<span class="point__offer-price">${offer.price}</span>
               </label>`
   ).join(``).trim()
