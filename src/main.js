@@ -3,11 +3,7 @@ import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
 import {chart, typeToChartLabel} from './stats.js';
-import API from './api.js';
-
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dg`;
-const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
-const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+import {api} from './api.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
@@ -48,16 +44,6 @@ const chartData = {
   cost: [],
   moneyChartHeight: 0,
 };
-
-// Генерация входящих данных с массивом объектов-точек
-// const getPoints = (amount) => {
-//   let result = [];
-//   for (let i = 0; i < amount; i++) {
-//     let pointData = makeTripPoint();
-//     result.push(pointData);
-//   }
-//   return result;
-// };
 
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
@@ -172,7 +158,7 @@ renderFilters(filtersRawData);
 
 Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
   .then(([pointsData, destinations, offers]) => {
-    console.log(offers);
+    // console.log(pointsData);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
     sortPointsByDay(pointsData);

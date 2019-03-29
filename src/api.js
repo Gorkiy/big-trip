@@ -1,5 +1,8 @@
 import ModelPoint from './model-point.js';
 
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dg`;
+const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
+
 const Method = {
   GET: `GET`,
   POST: `POST`,
@@ -56,7 +59,7 @@ const API = class {
       .then(ModelPoint.parsePoint);
   }
 
-  updatePoints({id, data}) {
+  updatePoint({id, data}) {
     return this._load({
       url: `points/${id}`,
       method: Method.PUT,
@@ -83,4 +86,5 @@ const API = class {
   }
 };
 
-export default API;
+export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+// export default API;

@@ -1,5 +1,6 @@
 import Point from './point.js';
 import PointEdit from './point-edit.js';
+import {api} from './api.js';
 
 class TripDay {
   constructor(data) {
@@ -55,10 +56,39 @@ class TripDay {
         pointData.price = newObject.price;
         pointData.time = newObject.time;
 
-        point.update(pointData);
-        point.render();
-        this._dayElements.replaceChild(point.element, pointEdit.element);
-        pointEdit.unrender();
+        // const block = () => {
+        //   pointEdit.element.querySelector(`.point__button--save"`).innerText = `saving...`;
+        //   pointEdit.element.querySelector(`.card__inner`).classList.remove(`card__error`);
+        //   pointEdit.element.querySelector(`.point__button--save"`).disabled = true;
+        //   pointEdit.element.querySelector(`.card__text`).disabled = true;
+        // };
+        // const unblock = () => {
+        //   pointEdit.element.querySelector(`.point__button--save"`).innerText = `save`;
+        //   pointEdit.element.querySelector(`.point__button--save"`).disabled = false;
+        //   pointEdit.element.querySelector(`.card__text`).disabled = false;
+        // };
+        //
+        // block();
+
+        api.updatePoint({id: pointData.id, data: pointData.toRAW()})
+          .then((newPoint) => {
+            // unblock();
+            point.update(newPoint);
+            point.render();
+            this._dayElements.replaceChild(point.element, pointEdit.element);
+            pointEdit.unrender();
+          });
+        // .catch(() => {
+        //   taskEdit.shake();
+        //   taskEdit.element.querySelector(`.card__inner`).classList.add(`card__error`);
+        //   // unblock();
+        // });
+
+
+        // point.update(pointData);
+        // point.render();
+        // this._dayElements.replaceChild(point.element, pointEdit.element);
+        // pointEdit.unrender();
       };
 
       pointEdit.onDelete = () => {

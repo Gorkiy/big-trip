@@ -1,52 +1,9 @@
-const allTypes = {
-  'taxi': {
-    name: `Taxi`,
-    icon: `🚕`
-  },
-  'bus': {
-    name: `Bus`,
-    icon: `🚌`
-  },
-  'train': {
-    name: `Train`,
-    icon: `🚂`
-  },
-  'ship': {
-    name: `Ship`,
-    icon: `🛳`
-  },
-  'transport': {
-    name: `Transport`,
-    icon: `🚊`
-  },
-  'drive': {
-    name: `Drive`,
-    icon: `🚗`
-  },
-  'flight': {
-    name: `Flight`,
-    icon: `✈️`
-  },
-  'check-in': {
-    name: `Check-in`,
-    icon: `🏨`
-  },
-  'sightseeing': {
-    name: `Sightseeing`,
-    icon: `🏛`
-  },
-  'restaurant': {
-    name: `Restaurant`,
-    icon: `🍴`
-  },
-};
-
 class ModelPoint {
   constructor(data) {
     this.id = data[`id`];
     this.city = data[`destination`][`name`];
-    this.type = allTypes[data[`type`]].name;
-    this.typeIcon = allTypes[data[`type`]].icon;
+    this.type = ModelPoint.getTypeData(data[`type`]).name;
+    this.typeIcon = ModelPoint.getTypeData(data[`type`]).icon;
     this.description = data[`destination`][`description`];
     this.picture = data[`destination`][`pictures`];
     this.price = data[`base_price`];
@@ -61,17 +18,29 @@ class ModelPoint {
   }
 
   toRAW() {
-    // return {
-    //   'id': this.id,
-    //   'title': this.title,
-    //   'due_date': this.dueDate,
-    //   'tags': [...this.tags.values()],
-    //   'picture': this.picture,
-    //   'repeating_days': this.repeatingDays,
-    //   'color': this.color,
-    //   'is_favorite': this.isFavorite,
-    //   'is_done': this.isDone,
-    // };
+    return {
+      'id': this.id,
+      'date_from': this.date,
+      'date_to': this.dueDate,
+      'destination': {
+        name: this.city,
+        description: this.description,
+        pictures: this.picture
+      },
+      'base_price': this.price,
+      'is_favorite': this.isFavorite,
+      'offers': this.offers,
+      'type': this.type.toLowerCase(),
+    };
+  }
+
+  _convertOffers(offers) {
+    return offers.map((offer) => {
+      return {
+        name: offer.title,
+        price: offer.price,
+      };
+    });
   }
 
   _formatNewDate(ms) {
@@ -86,6 +55,52 @@ class ModelPoint {
       tripDay: date.getDate().toString(),
       uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
     };
+  }
+
+  static getTypeData(type) {
+    switch (type) {
+      case `taxi`: return {
+        name: `Taxi`,
+        icon: `🚕`
+      };
+      case `bus`: return {
+        name: `Bus`,
+        icon: `🚌`
+      };
+      case `train`: return {
+        name: `Train`,
+        icon: `🚂`
+      };
+      case `ship`: return {
+        name: `Ship`,
+        icon: `🛳`
+      };
+      case `transport`: return {
+        name: `Transport`,
+        icon: `🚊`
+      };
+      case `drive`: return {
+        name: `Drive`,
+        icon: `🚗`
+      };
+      case `flight`: return {
+        name: `Flight`,
+        icon: `✈️`
+      };
+      case `check-in`: return {
+        name: `Check-in`,
+        icon: `🏨`
+      };
+      case `sightseeing`: return {
+        name: `Sightseeing`,
+        icon: `🏛`
+      };
+      case `restaurant`: return {
+        name: `Restaurant`,
+        icon: `🍴`
+      };
+      default: return `no valid type`;
+    }
   }
 
   _getTime(date, dateDue) {
@@ -129,3 +144,4 @@ class ModelPoint {
 }
 
 export default ModelPoint;
+// console.log(ModelPoint.getTypeData('bus').name);
