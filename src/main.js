@@ -149,11 +149,17 @@ const renderCharts = () => {
     chart.moneyChart.destroy();
   }
 
-  getChartsData(points);
-  moneyChartCanvas.height = chartData.moneyChartHeight;
-  transChartCanvas.height = chartData.transportChartHeight;
-  chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
-  chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
+  api.getPoints()
+    .then((points) => {
+      console.log(points);
+      console.log(chartData);
+      getChartsData(points);
+      console.log(chartData);
+      moneyChartCanvas.height = chartData.moneyChartHeight;
+      transChartCanvas.height = chartData.transportChartHeight;
+      chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
+      chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
+    })
 };
 
 // Render
@@ -161,7 +167,6 @@ renderFilters(filtersRawData);
 
 Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
   .then(([pointsData, destinations, offers]) => {
-    console.log(offers);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
     sortPointsByDay(pointsData);
