@@ -55,6 +55,7 @@ class TripDay {
         pointData.description = newObject.description;
         pointData.price = newObject.price;
         pointData.time = newObject.time;
+        pointData.offers = newObject.offers;
 
         // const block = () => {
         //   pointEdit.element.querySelector(`.point__button--save"`).innerText = `saving...`;

@@ -158,7 +158,7 @@ renderFilters(filtersRawData);
 
 Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
   .then(([pointsData, destinations, offers]) => {
-    // console.log(pointsData);
+    console.log(offers);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
     sortPointsByDay(pointsData);
