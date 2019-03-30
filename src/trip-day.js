@@ -55,20 +55,22 @@ class TripDay {
         pointData.price = newObject.price;
         pointData.time = newObject.time;
         pointData.offers = newObject.offers;
+        // Передать
+        // СЮДА
+        // даты! они не обновляются
+        // или проверить выше передачу time (не обновляются диапазоны)
 
-        // const block = () => {
-        //   pointEdit.element.querySelector(`.point__button--save"`).innerText = `saving...`;
-        //   pointEdit.element.querySelector(`.card__inner`).classList.remove(`card__error`);
-        //   pointEdit.element.querySelector(`.point__button--save"`).disabled = true;
-        //   pointEdit.element.querySelector(`.card__text`).disabled = true;
-        // };
-        // const unblock = () => {
-        //   pointEdit.element.querySelector(`.point__button--save"`).innerText = `save`;
-        //   pointEdit.element.querySelector(`.point__button--save"`).disabled = false;
-        //   pointEdit.element.querySelector(`.card__text`).disabled = false;
-        // };
-        //
-        // block();
+        const block = () => {
+          pointEdit.element.querySelector(`.point__button--save`).innerText = `Saving...`;
+          pointEdit.element.classList.remove(`point--error`);
+          pointEdit.element.querySelector(`.point__button--save`).disabled = true;
+        };
+        const unblock = () => {
+          pointEdit.element.querySelector(`.point__button--save`).innerText = `Save`;
+          pointEdit.element.querySelector(`.point__button--save`).disabled = false;
+        };
+
+        block();
 
         api.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
@@ -77,15 +79,26 @@ class TripDay {
             point.render();
             this._dayElements.replaceChild(point.element, pointEdit.element);
             pointEdit.unrender();
-          });
-        // .catch(() => {
-        //   taskEdit.shake();
-        //   taskEdit.element.querySelector(`.card__inner`).classList.add(`card__error`);
-        //   // unblock();
-        // });
+          })
+        .catch(() => {
+          pointEdit.shake();
+          pointEdit.element.classList.add(`point--error`);
+          unblock();
+        });
       };
 
       pointEdit.onDelete = ({id}) => {
+        const block = () => {
+          pointEdit.element.querySelector(`.point__button--delete`).innerText = `Deleting...`;
+          pointEdit.element.classList.remove(`point--error`);
+          pointEdit.element.querySelector(`.point__button--delete`).disabled = true;
+        };
+        const unblock = () => {
+          pointEdit.element.querySelector(`.point__button--delete`).innerText = `Delete`;
+          pointEdit.element.querySelector(`.point__button--delete`).disabled = false;
+        };
+
+        block();
 
         api.deletePoint({id})
           .then(() => api.getPoints())
@@ -97,12 +110,12 @@ class TripDay {
               this._element.remove();
             }
             this._onDelete();
+          })
+          .catch(() => {
+            pointEdit.shake();
+            pointEdit.element.classList.add(`point--error`);
+            unblock();
           });
-          // .catch(() => {
-          //   pointEdit.shake();
-          //   pointEdit.element.querySelector(`.card__inner`).classList.add(`card__error`);
-          //   unblock();
-          // });
       };
     });
   }

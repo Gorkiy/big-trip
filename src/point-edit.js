@@ -1,5 +1,3 @@
-// TODO: Исправить ошибку в _onChangeType — неправильная обработка при нескольких открытых карточках
-
 import Component from './component.js';
 import {types, getTime} from './make-trip-point.js';
 import flatpickr from 'flatpickr';
@@ -245,6 +243,15 @@ class PointEdit extends Component {
 
   _generateOfferId(offer) {
     return offer.title.replace(/[^A-Za-z]/g, ` `).toLowerCase().split(` `).join(`-`);
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
   }
 
   set onSubmit(fn) {

@@ -66,15 +66,15 @@ const renderPoints = (data) => {
 
     day.onDelete = () => {
       api.getPoints()
-      .then((points) => {
-        sortPointsByDay(points);
+      .then((remainPoints) => {
+        sortPointsByDay(remainPoints);
         renderPoints(pointsByDay);
-      })
+      });
     };
   });
 };
 // Сортируем задачи под фильтры
-const filterTasks = (data, filterName) => {
+const filterPoints = (data, filterName) => {
   switch (filterName) {
     case `filter-everything`:
       return data;
@@ -94,12 +94,12 @@ function renderFilters(filtersData) {
     filter.onFilter = () => {
       const filterName = filter._id;
       api.getPoints()
-      .then((points) => {
-        const filteredTasks = filterTasks(points, filterName);
+      .then((allPoints) => {
+        const filteredPoints = filterPoints(allPoints, filterName);
         tripPoints.innerHTML = ``;
-        sortPointsByDay(filteredTasks);
+        sortPointsByDay(filteredPoints);
         renderPoints(pointsByDay);
-      })
+      });
     };
   });
 }
@@ -153,16 +153,13 @@ const renderCharts = () => {
   }
 
   api.getPoints()
-    .then((points) => {
-      console.log(points);
-      console.log(chartData);
-      getChartsData(points);
-      console.log(chartData);
+    .then((pointsToChart) => {
+      getChartsData(pointsToChart);
       moneyChartCanvas.height = chartData.moneyChartHeight;
       transChartCanvas.height = chartData.transportChartHeight;
       chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
       chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
-    })
+    });
 };
 
 // Render
