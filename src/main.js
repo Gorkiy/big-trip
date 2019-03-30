@@ -93,10 +93,13 @@ function renderFilters(filtersData) {
 
     filter.onFilter = () => {
       const filterName = filter._id;
-      const filteredTasks = filterTasks(points, filterName);
-      tripPoints.innerHTML = ``;
-      sortPointsByDay(filteredTasks);
-      renderPoints(pointsByDay);
+      api.getPoints()
+      .then((points) => {
+        const filteredTasks = filterTasks(points, filterName);
+        tripPoints.innerHTML = ``;
+        sortPointsByDay(filteredTasks);
+        renderPoints(pointsByDay);
+      })
     };
   });
 }
