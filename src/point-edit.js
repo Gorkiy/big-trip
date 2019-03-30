@@ -1,7 +1,4 @@
-// 1. Ивент хендлер для фейворитс
-// 2. Ивент хендлер для кликов по инстансу оффера
-// 3. Исправить ошибку в _onChangeType — неправильная обработка при нескольких открытых карточках
-
+// TODO: Исправить ошибку в _onChangeType — неправильная обработка при нескольких открытых карточках
 
 import Component from './component.js';
 import {types, getTime} from './make-trip-point.js';
@@ -98,7 +95,7 @@ class PointEdit extends Component {
 
   _onDeleteButtonClick() {
     if (typeof this._onDelete === `function`) {
-      this._onDelete();
+      this._onDelete({id: this._id});
     }
   }
 

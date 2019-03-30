@@ -1,6 +1,6 @@
 import ModelPoint from './model-point.js';
 
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dg`;
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dgG`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
 
 const Method = {
@@ -33,9 +33,6 @@ const API = class {
     return this._load({url: `points`})
       .then(toJSON)
       .then(ModelPoint.parsePoints);
-    // .catch((err) => {
-    //   console.log(`get points error ${err}`)
-    // });
   }
 
   getDestinations() {
@@ -79,12 +76,7 @@ const API = class {
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
       .then(checkStatus);
-    // .catch((err) => {
-    //   console.error(`fetch error: ${err}`);
-    //   throw err;
-    // });
   }
 };
 
 export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
-// export default API;

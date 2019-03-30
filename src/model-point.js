@@ -144,4 +144,3 @@ class ModelPoint {
 }
 
 export default ModelPoint;
-// console.log(ModelPoint.getTypeData('bus').name);

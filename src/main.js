@@ -65,8 +65,11 @@ const renderPoints = (data) => {
     tripPoints.appendChild(day.render());
 
     day.onDelete = () => {
-      const pointsIndex = points.findIndex((point) => point.id === day._recentlyDeletedId);
-      points.splice(pointsIndex, 1);
+      api.getPoints()
+      .then((points) => {
+        sortPointsByDay(points);
+        renderPoints(pointsByDay);
+      })
     };
   });
 };

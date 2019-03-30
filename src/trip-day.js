@@ -13,7 +13,6 @@ class TripDay {
     this._recentlyDeletedId = null;
     this._element = null;
     this._onDelete = null;
-
   }
 
   _createElement(template) {
@@ -84,23 +83,26 @@ class TripDay {
         //   taskEdit.element.querySelector(`.card__inner`).classList.add(`card__error`);
         //   // unblock();
         // });
-
-
-        // point.update(pointData);
-        // point.render();
-        // this._dayElements.replaceChild(point.element, pointEdit.element);
-        // pointEdit.unrender();
       };
 
-      pointEdit.onDelete = () => {
-        this._recentlyDeletedId = this._pointsData[i].id;
-        this._points[i] = null;
-        // this._pointsData[i] = null;
-        pointEdit.unrender();
-        if (this._points.every((element) => element === null)) {
-          this._element.remove();
-        }
-        this._onDelete();
+      pointEdit.onDelete = ({id}) => {
+
+        api.deletePoint({id})
+          .then(() => api.getPoints())
+          .then(() => {
+            // Немножко костыль для удаления названия дня из верстки, если точек в этот день стало 0
+            this._points[i] = null;
+            pointEdit.unrender();
+            if (this._points.every((element) => element === null)) {
+              this._element.remove();
+            }
+            this._onDelete();
+          });
+          // .catch(() => {
+          //   pointEdit.shake();
+          //   pointEdit.element.querySelector(`.card__inner`).classList.add(`card__error`);
+          //   unblock();
+          // });
       };
     });
   }
