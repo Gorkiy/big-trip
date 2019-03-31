@@ -385,6 +385,9 @@ input[type=radio]:checked + .trip-sorting__item {
 .trip-points > .point .point__input {
  border-bottom: 1px solid #0D8AE4;
 }
+.trip-points__message {
+  padding-top: 36px;
+}
 .point {
   padding: 15px 0;
   background-color: #ffffff;

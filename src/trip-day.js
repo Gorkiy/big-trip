@@ -55,10 +55,8 @@ class TripDay {
         pointData.price = newObject.price;
         pointData.time = newObject.time;
         pointData.offers = newObject.offers;
-        // Передать
-        // СЮДА
-        // даты! они не обновляются
-        // или проверить выше передачу time (не обновляются диапазоны)
+        pointData.date = newObject.date;
+        pointData.dateDue = newObject.dateDue;
 
         const block = () => {
           pointEdit.element.querySelector(`.point__button--save`).innerText = `Saving...`;
@@ -74,7 +72,7 @@ class TripDay {
 
         api.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
-            // unblock();
+            unblock();
             point.update(newPoint);
             point.render();
             this._dayElements.replaceChild(point.element, pointEdit.element);

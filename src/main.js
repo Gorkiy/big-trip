@@ -165,10 +165,19 @@ const renderCharts = () => {
 // Render
 renderFilters(filtersRawData);
 
+let msg = document.createElement(`div`);
+msg.innerHTML = `Loading route...`;
+msg.classList.add(`trip-points__message`);
+tripPoints.appendChild(msg);
+
 Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
   .then(([pointsData, destinations, offers]) => {
+    tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
     sortPointsByDay(pointsData);
     renderPoints(pointsByDay);
+  })
+  .catch(() => {
+    msg.innerHTML = `Something went wrong while loading your route info. Check your connection or try again later`;
   });

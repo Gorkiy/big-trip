@@ -59,6 +59,8 @@ class PointEdit extends Component {
     entry.offers = this._offers;
     entry.picture = this._picture;
     entry.isFavorite = this._isFavorite;
+    entry.date = this._date;
+    entry.dateDue = this._dateDue;
     return entry;
   }
 

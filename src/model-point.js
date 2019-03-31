@@ -21,7 +21,7 @@ class ModelPoint {
     return {
       'id': this.id,
       'date_from': this.date,
-      'date_to': this.dueDate,
+      'date_to': this.dateDue,
       'destination': {
         name: this.city,
         description: this.description,
