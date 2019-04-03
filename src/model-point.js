@@ -104,8 +104,15 @@ class ModelPoint {
   }
 
   _getTime(date, dateDue) {
+    let interval = {
+      from: ``,
+      due: ``,
+      duration: ``
+    };
+
     const diffMs = dateDue - date;
     const diffHrs = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
     // const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
     const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
 
@@ -115,7 +122,7 @@ class ModelPoint {
       hours = `0` + hours;
     }
     if (minutes < 10) {
-      minutes = `0` + minutes;
+      minutes += `0`;
     }
 
     let dueHours = dateDue.getHours();
@@ -127,12 +134,48 @@ class ModelPoint {
       dueMinutes += `0`;
     }
 
-    return {
-      from: hours + `:` + minutes,
-      due: dueHours + `:` + dueMinutes,
-      duration: diffHrs + `H ` + diffMins
-    };
+    if (diffMs < 86400000) {
+      interval.duration = diffHrs + `H ` + diffMins;
+    } else {
+      interval.duration = diffDays + `D ` + diffHrs + `H ` + diffMins;
+    }
+
+    interval.from = hours + `:` + minutes;
+    interval.due = dueHours + `:` + dueMinutes;
+
+    return interval;
   }
+
+  // _getTime(date, dateDue) {
+  //   const diffMs = dateDue - date;
+  //   const diffHrs = Math.floor(diffMs / 3600000);
+  //   // const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+  //   const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+  //
+  //   let hours = date.getHours();
+  //   let minutes = date.getMinutes();
+  //   if (hours < 10) {
+  //     hours = `0` + hours;
+  //   }
+  //   if (minutes < 10) {
+  //     minutes = `0` + minutes;
+  //   }
+  //
+  //   let dueHours = dateDue.getHours();
+  //   let dueMinutes = dateDue.getMinutes();
+  //   if (dueHours < 10) {
+  //     dueHours = `0` + dueHours;
+  //   }
+  //   if (dueMinutes < 10) {
+  //     dueMinutes += `0`;
+  //   }
+  //
+  //   return {
+  //     from: hours + `:` + minutes,
+  //     due: dueHours + `:` + dueMinutes,
+  //     duration: diffHrs + `H ` + diffMins
+  //   };
+  // }
 
   static parsePoint(data) {
     return new ModelPoint(data);
