@@ -10,28 +10,21 @@ export const types = {
   'Sightseeing': `🏛`,
   // 'Restaurant': `🍴`,
 };
-let id = 0;
-const generateNewId = () => id++;
 
-const getRandomInt = (maxNum) => Math.floor(Math.random() * maxNum);
+// const getRandomInt = (maxNum) => Math.floor(Math.random() * maxNum);
 
-const getRandomType = (typesObj) => {
-  const typeEntries = Object.entries(typesObj);
-  return typeEntries[getRandomInt(typeEntries.length)];
-};
-
-const getRandomOffers = (offersArr) => {
-  let result = [];
-  for (let i = 0; i < getRandomInt(3); i++) {
-    let offer = offersArr[getRandomInt(offersArr.length)];
-    if (!result.includes(offer)) {
-      result.push(offer);
-    } else {
-      i--;
-    }
-  }
-  return result;
-};
+// const getRandomOffers = (offersArr) => {
+//   let result = [];
+//   for (let i = 0; i < getRandomInt(3); i++) {
+//     let offer = offersArr[getRandomInt(offersArr.length)];
+//     if (!result.includes(offer)) {
+//       result.push(offer);
+//     } else {
+//       i--;
+//     }
+//   }
+//   return result;
+// };
 
 export const formatDate = (date) => {
   const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,

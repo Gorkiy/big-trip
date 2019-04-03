@@ -174,7 +174,6 @@ class PointEdit extends Component {
       'minDate': `today`,
       'onChange': (selectedDates) => {
         this._date = selectedDates[0];
-        console.log(this._date);
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
         }

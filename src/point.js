@@ -48,7 +48,7 @@ class Point extends Component {
       } else {
         return ``;
       }
-    }).join(``).trim()
+    }).join(``).trim();
   }
 
   set onEdit(fn) {

@@ -11,8 +11,8 @@ const tableButton = document.querySelector(`.view-switch__item:nth-child(1)`);
 const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
 const main = document.querySelector(`.main`);
 const statistic = document.querySelector(`.statistic`);
-const newEventButton = document.querySelector(`.trip-controls__new-event`);
-const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
+// const newEventButton = document.querySelector(`.trip-controls__new-event`);
+// const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
 
 // newEventButton.addEventListener(`click`, (evt) => {
 //   evt.preventDefault();
@@ -26,10 +26,10 @@ const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
 //   ...
 // });
 
-timeIntSort.addEventListener(`click`, (evt) => {
-  // evt.preventDefault();
-
-});
+// timeIntSort.addEventListener(`click`, (evt) => {
+//   evt.preventDefault();
+//
+// });
 
 statsButton.addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -194,8 +194,8 @@ const getPointFullPrice = (pointsData) => {
     }, basePrice);
 
     point.fullPrice = fullPrice;
-  })
-}
+  });
+};
 
 // Render
 renderFilters(filtersRawData);
