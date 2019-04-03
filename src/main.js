@@ -12,6 +12,7 @@ const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
 const main = document.querySelector(`.main`);
 const statistic = document.querySelector(`.statistic`);
 const newEventButton = document.querySelector(`.trip-controls__new-event`);
+const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
 
 // newEventButton.addEventListener(`click`, (evt) => {
 //   evt.preventDefault();
@@ -24,6 +25,11 @@ const newEventButton = document.querySelector(`.trip-controls__new-event`);
 //   pointEdit.render();
 //   ...
 // });
+
+timeIntSort.addEventListener(`click`, (evt) => {
+  // evt.preventDefault();
+
+});
 
 statsButton.addEventListener(`click`, (evt) => {
   evt.preventDefault();

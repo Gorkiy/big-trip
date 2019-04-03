@@ -171,8 +171,10 @@ class PointEdit extends Component {
       'enableTime': true,
       'time_24hr': true,
       'dateFormat': `H:i`,
+      'minDate': `today`,
       'onChange': (selectedDates) => {
         this._date = selectedDates[0];
+        console.log(this._date);
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
         }
@@ -184,6 +186,7 @@ class PointEdit extends Component {
       'enableTime': true,
       'time_24hr': true,
       'dateFormat': `H:i`,
+      'minDate': this._date,
       'onChange': (selectedDates) => {
         this._dateDue = selectedDates[0];
         if (this._date && this._dateDue) {

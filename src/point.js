@@ -37,6 +37,20 @@ class Point extends Component {
     }
   }
 
+  _drawOffers(offers) {
+    let count = 0;
+    return offers.map((offer) => {
+      if (offer.accepted && count < 3) {
+        count++;
+        return `<li>
+                <button class="trip-point__offer">${offer.title || ``}</button>
+              </li>`;
+      } else {
+        return ``;
+      }
+    }).join(``).trim()
+  }
+
   set onEdit(fn) {
     this._onEdit = fn;
   }
@@ -64,16 +78,7 @@ class Point extends Component {
       </p>
       <p class="trip-point__price">&euro;&nbsp;${this._fullPrice || this._price}</p>
       <ul class="trip-point__offers">
-  ${ this._offers.map((offer) => {
-    if (offer.accepted) {
-      return `<li>
-              <button class="trip-point__offer">${offer.title || ``}</button>
-            </li>`;
-    } else {
-      return ``;
-    }
-  }).join(``).trim()
-}
+  ${ this._drawOffers(this._offers) }
       </ul>
     </article>`.trim();
   }
