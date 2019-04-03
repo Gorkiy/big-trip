@@ -58,6 +58,18 @@ const getRandomOffers = (offersArr) => {
   return result;
 };
 
+export const formatDate = (date) => {
+  const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,
+    `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
+
+  return {
+    tripYear: (`` + date.getFullYear()).substr(-2),
+    tripMonth: monthNames[date.getMonth()],
+    tripDay: date.getDate().toString(),
+    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+  };
+};
+
 const getRandomDate = () => {
   let date = new Date();
   date.setDate(date.getDate() + getRandomInt(2));
@@ -80,7 +92,8 @@ const getRandomDate = () => {
 
 export const getTime = (date, dateDue) => {
   const diffMs = dateDue - date;
-  const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+  const diffHrs = Math.floor(diffMs / 3600000);
+  // const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
   const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
 
   let hours = date.getHours();

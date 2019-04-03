@@ -3,6 +3,7 @@ import Component from './component.js';
 class Point extends Component {
   constructor(data) {
     super();
+    this._id = data.id;
     this._city = data.city;
     this._type = data.type;
     this._typeIcon = data.typeIcon;
@@ -15,6 +16,7 @@ class Point extends Component {
     this._uniqueDay = data.uniqueDay;
     this._time = data.time;
     this._date = data.date;
+    this._isFavorite = data.isFavorite;
     this._dateDue = data.dateDue;
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
@@ -60,11 +62,15 @@ class Point extends Component {
       </p>
       <p class="trip-point__price">&euro;&nbsp;${this._price}</p>
       <ul class="trip-point__offers">
-        ${ this._offers.map((offer) =>
-    `<li>
-            <button class="trip-point__offer">${offer}</button>
-          </li>`
-  ).join(``).trim()
+  ${ this._offers.map((offer) => {
+    if (offer.accepted) {
+      return `<li>
+              <button class="trip-point__offer">${offer.title || ``}</button>
+            </li>`;
+    } else {
+      return ``;
+    }
+  }).join(``).trim()
 }
       </ul>
     </article>`.trim();

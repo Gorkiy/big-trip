@@ -1,8 +1,9 @@
 import {makeFilterData} from './make-filter.js';
-import {makeTripPoint} from './make-trip-point.js';
 import TripDay from './trip-day.js';
 import Filter from './filter.js';
+import PointEdit from './point-edit.js';
 import {chart, typeToChartLabel} from './stats.js';
+import {api} from './api.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
@@ -44,16 +45,6 @@ const chartData = {
   moneyChartHeight: 0,
 };
 
-// Генерация входящих данных с массивом объектов-точек
-const getPoints = (amount) => {
-  let result = [];
-  for (let i = 0; i < amount; i++) {
-    let pointData = makeTripPoint();
-    result.push(pointData);
-  }
-  return result;
-};
-
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
   pointsByDay.clear();
@@ -74,13 +65,16 @@ const renderPoints = (data) => {
     tripPoints.appendChild(day.render());
 
     day.onDelete = () => {
-      const pointsIndex = points.findIndex((point) => point.id === day._recentlyDeletedId);
-      points.splice(pointsIndex, 1);
+      api.getPoints()
+      .then((remainPoints) => {
+        sortPointsByDay(remainPoints);
+        renderPoints(pointsByDay);
+      });
     };
   });
 };
 // Сортируем задачи под фильтры
-const filterTasks = (data, filterName) => {
+const filterPoints = (data, filterName) => {
   switch (filterName) {
     case `filter-everything`:
       return data;
@@ -99,10 +93,13 @@ function renderFilters(filtersData) {
 
     filter.onFilter = () => {
       const filterName = filter._id;
-      const filteredTasks = filterTasks(points, filterName);
-      tripPoints.innerHTML = ``;
-      sortPointsByDay(filteredTasks);
-      renderPoints(pointsByDay);
+      api.getPoints()
+      .then((allPoints) => {
+        const filteredPoints = filterPoints(allPoints, filterName);
+        tripPoints.innerHTML = ``;
+        sortPointsByDay(filteredPoints);
+        renderPoints(pointsByDay);
+      });
     };
   });
 }
@@ -155,15 +152,32 @@ const renderCharts = () => {
     chart.moneyChart.destroy();
   }
 
-  getChartsData(points);
-  moneyChartCanvas.height = chartData.moneyChartHeight;
-  transChartCanvas.height = chartData.transportChartHeight;
-  chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
-  chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
+  api.getPoints()
+    .then((pointsToChart) => {
+      getChartsData(pointsToChart);
+      moneyChartCanvas.height = chartData.moneyChartHeight;
+      transChartCanvas.height = chartData.transportChartHeight;
+      chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
+      chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
+    });
 };
 
-// Temp render
-points = getPoints(7);
-sortPointsByDay(points);
-renderPoints(pointsByDay);
+// Render
 renderFilters(filtersRawData);
+
+let msg = document.createElement(`div`);
+msg.innerHTML = `Loading route...`;
+msg.classList.add(`trip-points__message`);
+tripPoints.appendChild(msg);
+
+Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
+  .then(([pointsData, destinations, offers]) => {
+    tripPoints.removeChild(msg);
+    PointEdit.setDestinations(destinations);
+    PointEdit.setAllOffers(offers);
+    sortPointsByDay(pointsData);
+    renderPoints(pointsByDay);
+  })
+  .catch(() => {
+    msg.innerHTML = `Something went wrong while loading your route info. Check your connection or try again later`;
+  });
