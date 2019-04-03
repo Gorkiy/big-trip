@@ -11,6 +11,19 @@ const tableButton = document.querySelector(`.view-switch__item:nth-child(1)`);
 const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
 const main = document.querySelector(`.main`);
 const statistic = document.querySelector(`.statistic`);
+const newEventButton = document.querySelector(`.trip-controls__new-event`);
+
+// newEventButton.addEventListener(`click`, (evt) => {
+//   evt.preventDefault();
+//   const dummyData = {
+//     ...
+//   }
+//
+//   const point = new Point(dummyData);
+//   const pointEdit = new PointEdit(dummyData);
+//   pointEdit.render();
+//   ...
+// });
 
 statsButton.addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -55,7 +68,7 @@ const sortPointsByDay = (data) => {
       pointsByDay.get(point.uniqueDay).push(point);
     }
   }
-  pointsByDay = new Map([...pointsByDay.entries()].sort());
+  pointsByDay = new Map([...pointsByDay.entries()].sort((a, b) => a - b));
 };
 
 // Отрисовка точек из отсортированной по дням базы точек
@@ -67,6 +80,7 @@ const renderPoints = (data) => {
     day.onDelete = () => {
       api.getPoints()
       .then((remainPoints) => {
+        getPointFullPrice(remainPoints);
         sortPointsByDay(remainPoints);
         renderPoints(pointsByDay);
       });
@@ -162,6 +176,21 @@ const renderCharts = () => {
     });
 };
 
+const getPointFullPrice = (pointsData) => {
+  pointsData.forEach((point) => {
+    let basePrice = +point.price;
+    const fullPrice = point.offers.reduce((sum, current) => {
+      if (current.accepted) {
+        return sum + current.price;
+      } else {
+        return sum;
+      }
+    }, basePrice);
+
+    point.fullPrice = fullPrice;
+  })
+}
+
 // Render
 renderFilters(filtersRawData);
 
@@ -175,6 +204,9 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
     tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
+    // console.log(pointsData);
+    // console.log(offers);
+    getPointFullPrice(pointsData);
     sortPointsByDay(pointsData);
     renderPoints(pointsByDay);
   })

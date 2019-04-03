@@ -21,6 +21,18 @@ class TripDay {
     return newElement.firstChild;
   }
 
+  _getPointFullPrice(point) {
+    let basePrice = +point.price;
+    const fullPrice = point.offers.reduce((sum, current) => {
+      if (current.accepted) {
+        return sum + current.price;
+      } else {
+        return sum;
+      }
+    }, basePrice);
+    point.fullPrice = fullPrice;
+  }
+
   render() {
     this._element = this._createElement(this.template);
     this._dayElements = this._element.querySelector(`.trip-day__items`);
@@ -73,6 +85,7 @@ class TripDay {
         api.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
             unblock();
+            this._getPointFullPrice(newPoint);
             point.update(newPoint);
             point.render();
             this._dayElements.replaceChild(point.element, pointEdit.element);
