@@ -62,6 +62,7 @@ class PointEdit extends Component {
     entry.date = this._date;
     entry.dateDue = this._dateDue;
     entry._uniqueDay = this._uniqueDay;
+    entry._isFavorite = this.isFavorite;
 
     return entry;
   }
@@ -157,6 +158,7 @@ class PointEdit extends Component {
 
   _onFavoriteClick() {
     const favInput = this._element.querySelector(`.point__favorite-input`);
+    console.log('click');
     if (favInput.checked) {
       this._isFavorite = !this._isFavorite;
     } else {

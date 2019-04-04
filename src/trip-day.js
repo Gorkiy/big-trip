@@ -71,6 +71,7 @@ class TripDay {
         pointData.date = newObject.date;
         pointData.dateDue = newObject.dateDue;
         pointData.uniqueDay = newObject.uniqueDay;
+        pointData.isFavorite = newObject.isFavorite;
 
         const block = () => {
           pointEdit.element.querySelector(`.point__button--save`).innerText = `Saving...`;
