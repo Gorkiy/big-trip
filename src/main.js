@@ -3,7 +3,7 @@ import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
 import {chart, typeToChartLabel} from './stats.js';
-import {api, provider} from './api.js';
+import {provider} from './api.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);

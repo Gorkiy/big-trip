@@ -158,7 +158,6 @@ class PointEdit extends Component {
 
   _onFavoriteClick() {
     const favInput = this._element.querySelector(`.point__favorite-input`);
-    console.log('click');
     if (favInput.checked) {
       this._isFavorite = !this._isFavorite;
     } else {

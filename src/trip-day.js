@@ -1,6 +1,6 @@
 import Point from './point.js';
 import PointEdit from './point-edit.js';
-import {api, provider} from './api.js';
+import {provider} from './api.js';
 
 class TripDay {
   constructor(data) {
@@ -73,51 +73,20 @@ class TripDay {
         pointData.uniqueDay = newObject.uniqueDay;
         pointData.isFavorite = newObject.isFavorite;
 
-        const block = () => {
-          pointEdit.element.querySelector(`.point__button--save`).innerText = `Saving...`;
-          pointEdit.element.classList.remove(`point--error`);
-          pointEdit.element.querySelector(`.point__button--save`).disabled = true;
-        };
-        const unblock = () => {
-          pointEdit.element.querySelector(`.point__button--save`).innerText = `Save`;
-          pointEdit.element.querySelector(`.point__button--save`).disabled = false;
-        };
-
-        block();
-
         provider.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
-            console.log(newPoint);
-            console.log(newPoint.toRAW());
-            unblock();
+            // unblock();
             this._getPointFullPrice(newPoint);
             point.update(newPoint);
             point.render();
             this._dayElements.replaceChild(point.element, pointEdit.element);
             pointEdit.unrender();
-          })
-        .catch(() => {
-          pointEdit.shake();
-          pointEdit.element.classList.add(`point--error`);
-          unblock();
-        });
+          });
 
         this._onSubmit();
       };
 
       pointEdit.onDelete = ({id}) => {
-        const block = () => {
-          pointEdit.element.querySelector(`.point__button--delete`).innerText = `Deleting...`;
-          pointEdit.element.classList.remove(`point--error`);
-          pointEdit.element.querySelector(`.point__button--delete`).disabled = true;
-        };
-        const unblock = () => {
-          pointEdit.element.querySelector(`.point__button--delete`).innerText = `Delete`;
-          pointEdit.element.querySelector(`.point__button--delete`).disabled = false;
-        };
-
-        block();
-
         provider.deletePoint({id})
           .then(() => provider.getPoints())
           .then(() => {
@@ -128,11 +97,6 @@ class TripDay {
               this._element.remove();
             }
             this._onDelete();
-          })
-          .catch(() => {
-            pointEdit.shake();
-            pointEdit.element.classList.add(`point--error`);
-            unblock();
           });
       };
     });

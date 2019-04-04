@@ -4,7 +4,7 @@ import Store from './store.js';
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34d`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
-const TASKS_STORE_KEY = `tasks-store-key`;
+const TASKS_STORE_KEY = `ninja-key`;
 
 const Method = {
   GET: `GET`,
@@ -82,5 +82,13 @@ const API = class {
 };
 
 export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
-export const store = new Store();
-export const provider = new Provider({api, store});
+export const store = new Store({key: TASKS_STORE_KEY, storage: localStorage});
+export const provider = new Provider({api, store, generateId: () => String(Date.now())});
+
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncTasks();
+});
