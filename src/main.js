@@ -12,7 +12,11 @@ const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
 const main = document.querySelector(`.main`);
 const statistic = document.querySelector(`.statistic`);
 // const newEventButton = document.querySelector(`.trip-controls__new-event`);
-// const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
+const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
+const defaultSort = document.querySelector(`.trip-sorting__item--event`);
+const priceSort = document.querySelector(`.trip-sorting__item--price`);
+let descendingTime;
+let descendingPrice;
 
 // newEventButton.addEventListener(`click`, (evt) => {
 //   evt.preventDefault();
@@ -26,10 +30,38 @@ const statistic = document.querySelector(`.statistic`);
 //   ...
 // });
 
-// timeIntSort.addEventListener(`click`, (evt) => {
-//   evt.preventDefault();
-//
-// });
+defaultSort.addEventListener(`click`, (evt) => {
+  api.getPoints()
+    .then((pointsData) => {
+      tripPoints.innerHTML = ``;
+      getPointFullPrice(pointsData);
+      sortPointsByDay(pointsData);
+      renderPoints(pointsByDay);
+    });
+});
+
+timeIntSort.addEventListener(`click`, (evt) => {
+  descendingTime = !descendingTime;
+  api.getPoints()
+    .then((pointsData) => {
+      tripPoints.innerHTML = ``;
+      sortByTime(pointsData, descendingTime);
+      sortPointsByDay(pointsData);
+      renderPoints(pointsByDay);
+    });
+});
+
+priceSort.addEventListener(`click`, (evt) => {
+  descendingPrice = !descendingPrice;
+  api.getPoints()
+    .then((pointsData) => {
+      tripPoints.innerHTML = ``;
+      getPointFullPrice(pointsData);
+      sortByPrice(pointsData, descendingPrice);
+      sortPointsByDay(pointsData);
+      renderPoints(pointsByDay);
+    });
+});
 
 statsButton.addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -93,6 +125,24 @@ const renderPoints = (data) => {
     };
   });
 };
+
+// Сортировки таблицы точек
+const sortByTime = (data, descending = true) => {
+  if (descending) {
+    return data.sort((a, b) => a.time.timeDiffMs - b.time.timeDiffMs);
+  } else {
+    return data.sort((a, b) => b.time.timeDiffMs - a.time.timeDiffMs);
+  }
+};
+
+const sortByPrice = (data, descending = true) => {
+  if (descending) {
+    return data.sort((a, b) => a.fullPrice - b.fullPrice);
+  } else {
+    return data.sort((a, b) => b.fullPrice - a.fullPrice);
+  }
+};
+
 // Сортируем задачи под фильтры
 const filterPoints = (data, filterName) => {
   switch (filterName) {
@@ -182,6 +232,8 @@ const renderCharts = () => {
     });
 };
 
+// Пересчет цен с офферами на лету
+// TODO: здесь же изменять полную стоимость путешествия?
 const getPointFullPrice = (pointsData) => {
   pointsData.forEach((point) => {
     let basePrice = +point.price;
@@ -210,7 +262,7 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
     tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
-    // console.log(pointsData);
+    console.log(pointsData);
     // console.log(offers);
     getPointFullPrice(pointsData);
     sortPointsByDay(pointsData);
