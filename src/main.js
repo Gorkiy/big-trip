@@ -17,6 +17,15 @@ const defaultSort = document.querySelector(`.trip-sorting__item--event`);
 const priceSort = document.querySelector(`.trip-sorting__item--price`);
 let descendingTime;
 let descendingPrice;
+let totalPrice = 0;
+
+const init = (pointsData) => {
+  tripPoints.innerHTML = ``;
+  getPointFullPrice(pointsData);
+  sortPointsByDay(pointsData);
+  renderPoints(pointsByDay);
+  renderTripDates(pointsByDay);
+};
 
 // newEventButton.addEventListener(`click`, (evt) => {
 //   evt.preventDefault();
@@ -30,28 +39,26 @@ let descendingPrice;
 //   ...
 // });
 
-defaultSort.addEventListener(`click`, (evt) => {
+defaultSort.addEventListener(`click`, () => {
   api.getPoints()
     .then((pointsData) => {
-      tripPoints.innerHTML = ``;
-      getPointFullPrice(pointsData);
-      sortPointsByDay(pointsData);
-      renderPoints(pointsByDay);
+      init(pointsData);
     });
 });
 
-timeIntSort.addEventListener(`click`, (evt) => {
+timeIntSort.addEventListener(`click`, () => {
   descendingTime = !descendingTime;
   api.getPoints()
     .then((pointsData) => {
       tripPoints.innerHTML = ``;
+      getPointFullPrice(pointsData);
       sortByTime(pointsData, descendingTime);
       sortPointsByDay(pointsData);
       renderPoints(pointsByDay);
     });
 });
 
-priceSort.addEventListener(`click`, (evt) => {
+priceSort.addEventListener(`click`, () => {
   descendingPrice = !descendingPrice;
   api.getPoints()
     .then((pointsData) => {
@@ -118,9 +125,7 @@ const renderPoints = (data) => {
     day.onDelete = () => {
       api.getPoints()
       .then((remainPoints) => {
-        getPointFullPrice(remainPoints);
-        sortPointsByDay(remainPoints);
-        renderPoints(pointsByDay);
+        init(remainPoints);
       });
     };
   });
@@ -233,8 +238,8 @@ const renderCharts = () => {
 };
 
 // Пересчет цен с офферами на лету
-// TODO: здесь же изменять полную стоимость путешествия?
 const getPointFullPrice = (pointsData) => {
+  totalPrice = 0;
   pointsData.forEach((point) => {
     let basePrice = +point.price;
     const fullPrice = point.offers.reduce((sum, current) => {
@@ -244,9 +249,37 @@ const getPointFullPrice = (pointsData) => {
         return sum;
       }
     }, basePrice);
-
+    totalPrice += fullPrice;
     point.fullPrice = fullPrice;
   });
+  document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`; // Не обновляется по сабмиту формы
+};
+
+const renderTripDates = (pointsData) => {
+  let firstPoint = null;
+  let lastPoint = null;
+  let result;
+  let pointsArr = Array.from(pointsData.values());
+
+  if (pointsArr.length === 0) {
+    result = ``;
+  } else if (pointsArr.length === 1) {
+    firstPoint = pointsArr[0][0];
+    lastPoint = pointsArr[0][0];
+  } else {
+    firstPoint = pointsArr[0][0];
+    lastPoint = pointsArr[pointsArr.length - 1][0];
+  }
+
+  const firstMonth = firstPoint.month.slice(0, 3);
+  const lastMonth = lastPoint.month.slice(0, 3);
+
+  if (firstMonth !== lastMonth) {
+    result = firstMonth + ` ` + firstPoint.day + ` — ` + lastMonth + ` ` + lastPoint.day;
+  } else {
+    result = firstMonth + ` ` + firstPoint.day + ` — ` + lastPoint.day;
+  }
+  document.querySelector(`.trip__dates`).innerText = result;
 };
 
 // Render
@@ -262,11 +295,7 @@ Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
     tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
-    console.log(pointsData);
-    // console.log(offers);
-    getPointFullPrice(pointsData);
-    sortPointsByDay(pointsData);
-    renderPoints(pointsByDay);
+    init(pointsData);
   })
   .catch(() => {
     msg.innerHTML = `Something went wrong while loading your route info. Check your connection or try again later`;

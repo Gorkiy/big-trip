@@ -1,6 +1,6 @@
 import ModelPoint from './model-point.js';
 
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dgG`;
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34d`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
 
 const Method = {
@@ -21,7 +21,6 @@ const checkStatus = (response) => {
 const toJSON = (response) => {
   return response.json();
 };
-
 
 const API = class {
   constructor({endPoint, authorization}) {
