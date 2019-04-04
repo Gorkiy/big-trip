@@ -11,20 +11,19 @@ export const types = {
   // 'Restaurant': `🍴`,
 };
 
-// const getRandomInt = (maxNum) => Math.floor(Math.random() * maxNum);
+export const formatNewDate = (ms) => {
+  let date = new Date(ms);
+  // console.log(date);
+  const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,
+    `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
 
-// const getRandomOffers = (offersArr) => {
-//   let result = [];
-//   for (let i = 0; i < getRandomInt(3); i++) {
-//     let offer = offersArr[getRandomInt(offersArr.length)];
-//     if (!result.includes(offer)) {
-//       result.push(offer);
-//     } else {
-//       i--;
-//     }
-//   }
-//   return result;
-// };
+  return {
+    tripYear: (`` + date.getFullYear()).substr(-2),
+    tripMonth: monthNames[date.getMonth()],
+    tripDay: date.getDate().toString(),
+    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+  };
+};
 
 export const formatDate = (date) => {
   const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,

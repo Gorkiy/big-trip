@@ -13,6 +13,7 @@ class TripDay {
     this._recentlyDeletedId = null;
     this._element = null;
     this._onDelete = null;
+    this._onSubmit = null;
   }
 
   _createElement(template) {
@@ -69,6 +70,7 @@ class TripDay {
         pointData.offers = newObject.offers;
         pointData.date = newObject.date;
         pointData.dateDue = newObject.dateDue;
+        pointData.uniqueDay = newObject.uniqueDay;
 
         const block = () => {
           pointEdit.element.querySelector(`.point__button--save`).innerText = `Saving...`;
@@ -96,6 +98,8 @@ class TripDay {
           pointEdit.element.classList.add(`point--error`);
           unblock();
         });
+
+        this._onSubmit();
       };
 
       pointEdit.onDelete = ({id}) => {
@@ -137,6 +141,10 @@ class TripDay {
 
   set onDelete(fn) {
     this._onDelete = fn;
+  }
+
+  set onSubmit(fn) {
+    this._onSubmit = fn;
   }
 
   get element() {

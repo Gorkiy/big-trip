@@ -1,5 +1,5 @@
 import Component from './component.js';
-import {types, getTime} from './make-trip-point.js';
+import {types, getTime, formatNewDate} from './make-trip-point.js';
 import flatpickr from 'flatpickr';
 
 class PointEdit extends Component {
@@ -61,6 +61,8 @@ class PointEdit extends Component {
     entry.isFavorite = this._isFavorite;
     entry.date = this._date;
     entry.dateDue = this._dateDue;
+    entry._uniqueDay = this._uniqueDay;
+
     return entry;
   }
 
@@ -174,6 +176,7 @@ class PointEdit extends Component {
       'minDate': `today`,
       'onChange': (selectedDates) => {
         this._date = selectedDates[0];
+        this._uniqueDay = formatNewDate(this._date).uniqueDay;
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
         }
@@ -243,6 +246,7 @@ class PointEdit extends Component {
     this._date = data.date;
     this._dateDue = data.dateDue;
     this._isFavorite = data.isFavorite;
+    this._uniqueDay = data.uniqueDay;
   }
 
   _generateOfferId(offer) {

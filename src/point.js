@@ -65,6 +65,7 @@ class Point extends Component {
     this._date = data.date;
     this._dateDue = data.dateDue;
     this._fullPrice = data.fullPrice;
+    this._uniqueDay = data.uniqueDay;
   }
 
   get template() {

@@ -128,6 +128,12 @@ const renderPoints = (data) => {
         init(remainPoints);
       });
     };
+    day.onSubmit = () => {
+      api.getPoints()
+      .then((allPoints) => {
+        init(allPoints);
+      });
+    };
   });
 };
 
