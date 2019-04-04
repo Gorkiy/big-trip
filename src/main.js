@@ -106,6 +106,8 @@ const chartData = {
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
   pointsByDay.clear();
+  data.sort((a, b) => a.uniqueDay - b.uniqueDay);
+
   for (let point of data) {
     if (!pointsByDay.has(point.uniqueDay)) {
       pointsByDay.set(point.uniqueDay, [point]);
@@ -113,7 +115,6 @@ const sortPointsByDay = (data) => {
       pointsByDay.get(point.uniqueDay).push(point);
     }
   }
-  pointsByDay = new Map([...pointsByDay.entries()].sort((a, b) => a - b));
 };
 
 // Отрисовка точек из отсортированной по дням базы точек
@@ -298,6 +299,7 @@ tripPoints.appendChild(msg);
 
 Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
   .then(([pointsData, destinations, offers]) => {
+    // console.log(pointsData);
     tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);

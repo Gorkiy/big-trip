@@ -20,8 +20,8 @@ class ModelPoint {
   toRAW() {
     return {
       'id': this.id,
-      'date_from': this.date,
-      'date_to': this.dateDue,
+      'date_from': this.date.getTime(),
+      'date_to': this.dateDue.getTime(),
       'destination': {
         name: this.city,
         description: this.description,
@@ -53,7 +53,8 @@ class ModelPoint {
       tripYear: (`` + date.getFullYear()).substr(-2),
       tripMonth: monthNames[date.getMonth()],
       tripDay: date.getDate().toString(),
-      uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+      // uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+      uniqueDay: parseInt(`` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(), 10),
     };
   }
 

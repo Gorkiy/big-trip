@@ -86,6 +86,8 @@ class TripDay {
 
         api.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
+            console.log(newPoint);
+            console.log(newPoint.toRAW());
             unblock();
             this._getPointFullPrice(newPoint);
             point.update(newPoint);
