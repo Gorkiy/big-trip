@@ -10,6 +10,7 @@ class Point extends Component {
     this._description = data.description;
     this._picture = data.picture;
     this._price = data.price;
+    this._fullPrice = data.fullPrice || null;
     this._offers = data.offers;
     this._day = data.day;
     this._month = data.month;
@@ -36,6 +37,20 @@ class Point extends Component {
     }
   }
 
+  _drawOffers(offers) {
+    let count = 0;
+    return offers.map((offer) => {
+      if (offer.accepted && count < 3) {
+        count++;
+        return `<li>
+                <button class="trip-point__offer">${offer.title || ``}</button>
+              </li>`;
+      } else {
+        return ``;
+      }
+    }).join(``).trim();
+  }
+
   set onEdit(fn) {
     this._onEdit = fn;
   }
@@ -49,6 +64,8 @@ class Point extends Component {
     this._time = data.time;
     this._date = data.date;
     this._dateDue = data.dateDue;
+    this._fullPrice = data.fullPrice;
+    this._uniqueDay = data.uniqueDay;
   }
 
   get template() {
@@ -60,18 +77,9 @@ class Point extends Component {
         <span class="trip-point__timetable">${this._time.from}&nbsp;&mdash; ${this._time.due}</span>
         <span class="trip-point__duration">${this._time.duration}</span>
       </p>
-      <p class="trip-point__price">&euro;&nbsp;${this._price}</p>
+      <p class="trip-point__price">&euro;&nbsp;${this._fullPrice || this._price}</p>
       <ul class="trip-point__offers">
-  ${ this._offers.map((offer) => {
-    if (offer.accepted) {
-      return `<li>
-              <button class="trip-point__offer">${offer.title || ``}</button>
-            </li>`;
-    } else {
-      return ``;
-    }
-  }).join(``).trim()
-}
+  ${ this._drawOffers(this._offers) }
       </ul>
     </article>`.trim();
   }

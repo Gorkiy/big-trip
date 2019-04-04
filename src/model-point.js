@@ -20,8 +20,8 @@ class ModelPoint {
   toRAW() {
     return {
       'id': this.id,
-      'date_from': this.date,
-      'date_to': this.dateDue,
+      'date_from': this.date.getTime(),
+      'date_to': this.dateDue.getTime(),
       'destination': {
         name: this.city,
         description: this.description,
@@ -53,7 +53,8 @@ class ModelPoint {
       tripYear: (`` + date.getFullYear()).substr(-2),
       tripMonth: monthNames[date.getMonth()],
       tripDay: date.getDate().toString(),
-      uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+      // uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+      uniqueDay: parseInt(`` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(), 10),
     };
   }
 
@@ -104,11 +105,19 @@ class ModelPoint {
   }
 
   _getTime(date, dateDue) {
+    const interval = {
+      from: ``,
+      due: ``,
+      duration: ``,
+      timeDiffMs: ``
+    };
+
     const diffMs = dateDue - date;
-    const diffHrs = Math.floor(diffMs / 3600000);
-    // const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+    const diffHrs = Math.floor(diffMs / 3600000) % 24;
+    const diffDays = Math.floor(diffMs / 86400000);
     const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
 
+    let days = diffDays;
     let hours = date.getHours();
     let minutes = date.getMinutes();
     if (hours < 10) {
@@ -116,6 +125,9 @@ class ModelPoint {
     }
     if (minutes < 10) {
       minutes = `0` + minutes;
+    }
+    if (days < 10) {
+      days = `0` + days;
     }
 
     let dueHours = dateDue.getHours();
@@ -126,12 +138,16 @@ class ModelPoint {
     if (dueMinutes < 10) {
       dueMinutes += `0`;
     }
+    if (diffMs < 86400000) {
+      interval.duration = diffHrs + `H ` + diffMins;
+    } else {
+      interval.duration = days + `D ` + diffHrs + `H ` + diffMins;
+    }
 
-    return {
-      from: hours + `:` + minutes,
-      due: dueHours + `:` + dueMinutes,
-      duration: diffHrs + `H ` + diffMins
-    };
+    interval.from = hours + `:` + minutes;
+    interval.due = dueHours + `:` + dueMinutes;
+    interval.timeDiffMs = diffMs;
+    return interval;
   }
 
   static parsePoint(data) {

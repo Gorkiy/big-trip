@@ -1,7 +1,10 @@
 import ModelPoint from './model-point.js';
+import Provider from './provider.js';
+import Store from './store.js';
 
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dgG`;
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34d`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
+const TASKS_STORE_KEY = `ninja-key`;
 
 const Method = {
   GET: `GET`,
@@ -21,7 +24,6 @@ const checkStatus = (response) => {
 const toJSON = (response) => {
   return response.json();
 };
-
 
 const API = class {
   constructor({endPoint, authorization}) {
@@ -80,3 +82,13 @@ const API = class {
 };
 
 export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+export const store = new Store({key: TASKS_STORE_KEY, storage: localStorage});
+export const provider = new Provider({api, store, generateId: () => String(Date.now())});
+
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncTasks();
+});

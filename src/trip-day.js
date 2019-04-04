@@ -1,6 +1,6 @@
 import Point from './point.js';
 import PointEdit from './point-edit.js';
-import {api} from './api.js';
+import {provider} from './api.js';
 
 class TripDay {
   constructor(data) {
@@ -13,12 +13,25 @@ class TripDay {
     this._recentlyDeletedId = null;
     this._element = null;
     this._onDelete = null;
+    this._onSubmit = null;
   }
 
   _createElement(template) {
     const newElement = document.createElement(`div`);
     newElement.innerHTML = template;
     return newElement.firstChild;
+  }
+
+  _getPointFullPrice(point) {
+    let basePrice = +point.price;
+    const fullPrice = point.offers.reduce((sum, current) => {
+      if (current.accepted) {
+        return sum + current.price;
+      } else {
+        return sum;
+      }
+    }, basePrice);
+    point.fullPrice = fullPrice;
   }
 
   render() {
@@ -57,49 +70,25 @@ class TripDay {
         pointData.offers = newObject.offers;
         pointData.date = newObject.date;
         pointData.dateDue = newObject.dateDue;
+        pointData.uniqueDay = newObject.uniqueDay;
+        pointData.isFavorite = newObject.isFavorite;
 
-        const block = () => {
-          pointEdit.element.querySelector(`.point__button--save`).innerText = `Saving...`;
-          pointEdit.element.classList.remove(`point--error`);
-          pointEdit.element.querySelector(`.point__button--save`).disabled = true;
-        };
-        const unblock = () => {
-          pointEdit.element.querySelector(`.point__button--save`).innerText = `Save`;
-          pointEdit.element.querySelector(`.point__button--save`).disabled = false;
-        };
-
-        block();
-
-        api.updatePoint({id: pointData.id, data: pointData.toRAW()})
+        provider.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
-            unblock();
+            // unblock();
+            this._getPointFullPrice(newPoint);
             point.update(newPoint);
             point.render();
             this._dayElements.replaceChild(point.element, pointEdit.element);
             pointEdit.unrender();
-          })
-        .catch(() => {
-          pointEdit.shake();
-          pointEdit.element.classList.add(`point--error`);
-          unblock();
-        });
+          });
+
+        this._onSubmit();
       };
 
       pointEdit.onDelete = ({id}) => {
-        const block = () => {
-          pointEdit.element.querySelector(`.point__button--delete`).innerText = `Deleting...`;
-          pointEdit.element.classList.remove(`point--error`);
-          pointEdit.element.querySelector(`.point__button--delete`).disabled = true;
-        };
-        const unblock = () => {
-          pointEdit.element.querySelector(`.point__button--delete`).innerText = `Delete`;
-          pointEdit.element.querySelector(`.point__button--delete`).disabled = false;
-        };
-
-        block();
-
-        api.deletePoint({id})
-          .then(() => api.getPoints())
+        provider.deletePoint({id})
+          .then(() => provider.getPoints())
           .then(() => {
             // Немножко костыль для удаления названия дня из верстки, если точек в этот день стало 0
             this._points[i] = null;
@@ -108,11 +97,6 @@ class TripDay {
               this._element.remove();
             }
             this._onDelete();
-          })
-          .catch(() => {
-            pointEdit.shake();
-            pointEdit.element.classList.add(`point--error`);
-            unblock();
           });
       };
     });
@@ -124,6 +108,10 @@ class TripDay {
 
   set onDelete(fn) {
     this._onDelete = fn;
+  }
+
+  set onSubmit(fn) {
+    this._onSubmit = fn;
   }
 
   get element() {

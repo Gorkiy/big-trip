@@ -3,7 +3,7 @@ import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
 import {chart, typeToChartLabel} from './stats.js';
-import {api} from './api.js';
+import {provider} from './api.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
@@ -11,6 +11,64 @@ const tableButton = document.querySelector(`.view-switch__item:nth-child(1)`);
 const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
 const main = document.querySelector(`.main`);
 const statistic = document.querySelector(`.statistic`);
+// const newEventButton = document.querySelector(`.trip-controls__new-event`);
+const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
+const defaultSort = document.querySelector(`.trip-sorting__item--event`);
+const priceSort = document.querySelector(`.trip-sorting__item--price`);
+let descendingTime;
+let descendingPrice;
+let totalPrice = 0;
+
+const init = (pointsData) => {
+  tripPoints.innerHTML = ``;
+  getPointFullPrice(pointsData);
+  sortPointsByDay(pointsData);
+  renderPoints(pointsByDay);
+  renderTripDates(pointsByDay);
+};
+
+// newEventButton.addEventListener(`click`, (evt) => {
+//   evt.preventDefault();
+//   const dummyData = {
+//     ...
+//   }
+//
+//   const point = new Point(dummyData);
+//   const pointEdit = new PointEdit(dummyData);
+//   pointEdit.render();
+//   ...
+// });
+
+defaultSort.addEventListener(`click`, () => {
+  provider.getPoints()
+    .then((pointsData) => {
+      init(pointsData);
+    });
+});
+
+timeIntSort.addEventListener(`click`, () => {
+  descendingTime = !descendingTime;
+  provider.getPoints()
+    .then((pointsData) => {
+      tripPoints.innerHTML = ``;
+      getPointFullPrice(pointsData);
+      sortByTime(pointsData, descendingTime);
+      sortPointsByDay(pointsData);
+      renderPoints(pointsByDay);
+    });
+});
+
+priceSort.addEventListener(`click`, () => {
+  descendingPrice = !descendingPrice;
+  provider.getPoints()
+    .then((pointsData) => {
+      tripPoints.innerHTML = ``;
+      getPointFullPrice(pointsData);
+      sortByPrice(pointsData, descendingPrice);
+      sortPointsByDay(pointsData);
+      renderPoints(pointsByDay);
+    });
+});
 
 statsButton.addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -48,6 +106,8 @@ const chartData = {
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
   pointsByDay.clear();
+  data.sort((a, b) => a.uniqueDay - b.uniqueDay);
+
   for (let point of data) {
     if (!pointsByDay.has(point.uniqueDay)) {
       pointsByDay.set(point.uniqueDay, [point]);
@@ -55,7 +115,6 @@ const sortPointsByDay = (data) => {
       pointsByDay.get(point.uniqueDay).push(point);
     }
   }
-  pointsByDay = new Map([...pointsByDay.entries()].sort());
 };
 
 // Отрисовка точек из отсортированной по дням базы точек
@@ -65,14 +124,37 @@ const renderPoints = (data) => {
     tripPoints.appendChild(day.render());
 
     day.onDelete = () => {
-      api.getPoints()
+      provider.getPoints()
       .then((remainPoints) => {
-        sortPointsByDay(remainPoints);
-        renderPoints(pointsByDay);
+        init(remainPoints);
+      });
+    };
+    day.onSubmit = () => {
+      provider.getPoints()
+      .then((allPoints) => {
+        init(allPoints);
       });
     };
   });
 };
+
+// Сортировки таблицы точек
+const sortByTime = (data, descending = true) => {
+  if (descending) {
+    return data.sort((a, b) => a.time.timeDiffMs - b.time.timeDiffMs);
+  } else {
+    return data.sort((a, b) => b.time.timeDiffMs - a.time.timeDiffMs);
+  }
+};
+
+const sortByPrice = (data, descending = true) => {
+  if (descending) {
+    return data.sort((a, b) => a.fullPrice - b.fullPrice);
+  } else {
+    return data.sort((a, b) => b.fullPrice - a.fullPrice);
+  }
+};
+
 // Сортируем задачи под фильтры
 const filterPoints = (data, filterName) => {
   switch (filterName) {
@@ -93,7 +175,7 @@ function renderFilters(filtersData) {
 
     filter.onFilter = () => {
       const filterName = filter._id;
-      api.getPoints()
+      provider.getPoints()
       .then((allPoints) => {
         const filteredPoints = filterPoints(allPoints, filterName);
         tripPoints.innerHTML = ``;
@@ -152,7 +234,7 @@ const renderCharts = () => {
     chart.moneyChart.destroy();
   }
 
-  api.getPoints()
+  provider.getPoints()
     .then((pointsToChart) => {
       getChartsData(pointsToChart);
       moneyChartCanvas.height = chartData.moneyChartHeight;
@@ -160,6 +242,51 @@ const renderCharts = () => {
       chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
       chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
     });
+};
+
+// Пересчет цен с офферами на лету
+const getPointFullPrice = (pointsData) => {
+  totalPrice = 0;
+  pointsData.forEach((point) => {
+    let basePrice = +point.price;
+    const fullPrice = point.offers.reduce((sum, current) => {
+      if (current.accepted) {
+        return sum + current.price;
+      } else {
+        return sum;
+      }
+    }, basePrice);
+    totalPrice += fullPrice;
+    point.fullPrice = fullPrice;
+  });
+  document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`; // Не обновляется по сабмиту формы
+};
+
+const renderTripDates = (pointsData) => {
+  let firstPoint = null;
+  let lastPoint = null;
+  let result;
+  let pointsArr = Array.from(pointsData.values());
+
+  if (pointsArr.length === 0) {
+    result = ``;
+  } else if (pointsArr.length === 1) {
+    firstPoint = pointsArr[0][0];
+    lastPoint = pointsArr[0][0];
+  } else {
+    firstPoint = pointsArr[0][0];
+    lastPoint = pointsArr[pointsArr.length - 1][0];
+  }
+
+  const firstMonth = firstPoint.month.slice(0, 3);
+  const lastMonth = lastPoint.month.slice(0, 3);
+
+  if (firstMonth !== lastMonth) {
+    result = firstMonth + ` ` + firstPoint.day + ` — ` + lastMonth + ` ` + lastPoint.day;
+  } else {
+    result = firstMonth + ` ` + firstPoint.day + ` — ` + lastPoint.day;
+  }
+  document.querySelector(`.trip__dates`).innerText = result;
 };
 
 // Render
@@ -170,13 +297,13 @@ msg.innerHTML = `Loading route...`;
 msg.classList.add(`trip-points__message`);
 tripPoints.appendChild(msg);
 
-Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
+Promise.all([provider.getPoints(), provider.getDestinations(), provider.getOffers()])
   .then(([pointsData, destinations, offers]) => {
+    // console.log(pointsData);
     tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
-    sortPointsByDay(pointsData);
-    renderPoints(pointsByDay);
+    init(pointsData);
   })
   .catch(() => {
     msg.innerHTML = `Something went wrong while loading your route info. Check your connection or try again later`;
