@@ -1,7 +1,10 @@
 import ModelPoint from './model-point.js';
+import Provider from './provider.js';
+import Store from './store.js';
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34d`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
+const TASKS_STORE_KEY = `tasks-store-key`;
 
 const Method = {
   GET: `GET`,
@@ -79,3 +82,5 @@ const API = class {
 };
 
 export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+export const store = new Store();
+export const provider = new Provider({api, store});

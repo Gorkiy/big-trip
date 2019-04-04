@@ -1,6 +1,6 @@
 import Point from './point.js';
 import PointEdit from './point-edit.js';
-import {api} from './api.js';
+import {api, provider} from './api.js';
 
 class TripDay {
   constructor(data) {
@@ -85,7 +85,7 @@ class TripDay {
 
         block();
 
-        api.updatePoint({id: pointData.id, data: pointData.toRAW()})
+        provider.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
             console.log(newPoint);
             console.log(newPoint.toRAW());
@@ -118,8 +118,8 @@ class TripDay {
 
         block();
 
-        api.deletePoint({id})
-          .then(() => api.getPoints())
+        provider.deletePoint({id})
+          .then(() => provider.getPoints())
           .then(() => {
             // Немножко костыль для удаления названия дня из верстки, если точек в этот день стало 0
             this._points[i] = null;

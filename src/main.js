@@ -3,7 +3,7 @@ import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
 import {chart, typeToChartLabel} from './stats.js';
-import {api} from './api.js';
+import {api, provider} from './api.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
@@ -40,7 +40,7 @@ const init = (pointsData) => {
 // });
 
 defaultSort.addEventListener(`click`, () => {
-  api.getPoints()
+  provider.getPoints()
     .then((pointsData) => {
       init(pointsData);
     });
@@ -48,7 +48,7 @@ defaultSort.addEventListener(`click`, () => {
 
 timeIntSort.addEventListener(`click`, () => {
   descendingTime = !descendingTime;
-  api.getPoints()
+  provider.getPoints()
     .then((pointsData) => {
       tripPoints.innerHTML = ``;
       getPointFullPrice(pointsData);
@@ -60,7 +60,7 @@ timeIntSort.addEventListener(`click`, () => {
 
 priceSort.addEventListener(`click`, () => {
   descendingPrice = !descendingPrice;
-  api.getPoints()
+  provider.getPoints()
     .then((pointsData) => {
       tripPoints.innerHTML = ``;
       getPointFullPrice(pointsData);
@@ -124,13 +124,13 @@ const renderPoints = (data) => {
     tripPoints.appendChild(day.render());
 
     day.onDelete = () => {
-      api.getPoints()
+      provider.getPoints()
       .then((remainPoints) => {
         init(remainPoints);
       });
     };
     day.onSubmit = () => {
-      api.getPoints()
+      provider.getPoints()
       .then((allPoints) => {
         init(allPoints);
       });
@@ -175,7 +175,7 @@ function renderFilters(filtersData) {
 
     filter.onFilter = () => {
       const filterName = filter._id;
-      api.getPoints()
+      provider.getPoints()
       .then((allPoints) => {
         const filteredPoints = filterPoints(allPoints, filterName);
         tripPoints.innerHTML = ``;
@@ -234,7 +234,7 @@ const renderCharts = () => {
     chart.moneyChart.destroy();
   }
 
-  api.getPoints()
+  provider.getPoints()
     .then((pointsToChart) => {
       getChartsData(pointsToChart);
       moneyChartCanvas.height = chartData.moneyChartHeight;
@@ -297,7 +297,7 @@ msg.innerHTML = `Loading route...`;
 msg.classList.add(`trip-points__message`);
 tripPoints.appendChild(msg);
 
-Promise.all([api.getPoints(), api.getDestinations(), api.getOffers()])
+Promise.all([provider.getPoints(), provider.getDestinations(), provider.getOffers()])
   .then(([pointsData, destinations, offers]) => {
     // console.log(pointsData);
     tripPoints.removeChild(msg);
