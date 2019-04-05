@@ -5,6 +5,16 @@ import PointEdit from './point-edit.js';
 import {chart, typeToChartLabel} from './stats.js';
 import {provider} from './api.js';
 
+navigator.serviceWorker.register('./sw.js')
+  .then(function(reg) {
+  // Регистрация сработала
+  console.log('Registration succeeded. Scope is ' + reg.scope);
+  })
+  .catch(function(error) {
+  // Регистрация прошла неудачно
+  console.log('Registration failed with ' + error);
+});
+
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
 const tableButton = document.querySelector(`.view-switch__item:nth-child(1)`);
