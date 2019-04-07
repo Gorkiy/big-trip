@@ -1,12 +1,4 @@
-navigator.serviceWorker.register(`/sw.js`)
-  .then(function (reg) {
-  // Регистрация сработала
-    console.log(`Registration succeeded. Scope is ` + reg.scope);
-  })
-  .catch(function (error) {
-  // Регистрация прошла неудачно
-    console.log(`Registration failed with ` + error);
-  });
+navigator.serviceWorker.register(`/sw.js`);
 
 import {makeFilterData} from './make-filter.js';
 import TripDay from './trip-day.js';
