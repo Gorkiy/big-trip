@@ -70,14 +70,14 @@ const API = class {
   }
 
   syncPoints({points}) {
-  return this._load({
-    url: `points/sync`,
-    method: `POST`,
-    body: JSON.stringify(points),
-    headers: new Headers({'Content-Type': `application/json`})
-  })
-    .then(toJSON);
-}
+    return this._load({
+      url: `points/sync`,
+      method: `POST`,
+      body: JSON.stringify(points),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then(toJSON);
+  }
 
   deletePoint({id}) {
     return this._load({url: `points/${id}`, method: Method.DELETE});

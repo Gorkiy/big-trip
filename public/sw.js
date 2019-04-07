@@ -4,7 +4,7 @@ self.addEventListener(`install`, (evt)  => {
       return cache.addAll([
         `/`,
         `/index.html`,
-        `/main.js`
+        `/bundle.js`
       ]);
     });
 
