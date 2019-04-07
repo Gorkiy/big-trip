@@ -13,7 +13,7 @@ const tableButton = document.querySelector(`.view-switch__item:nth-child(1)`);
 const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
 const main = document.querySelector(`.main`);
 const statistic = document.querySelector(`.statistic`);
-// const newEventButton = document.querySelector(`.trip-controls__new-event`);
+const newEventButton = document.querySelector(`.trip-controls__new-event`);
 const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
 const defaultSort = document.querySelector(`.trip-sorting__item--event`);
 const priceSort = document.querySelector(`.trip-sorting__item--price`);
@@ -29,17 +29,22 @@ const init = (pointsData) => {
   renderTripDates(pointsByDay);
 };
 
-// newEventButton.addEventListener(`click`, (evt) => {
-//   evt.preventDefault();
-//   const dummyData = {
-//     ...
-//   }
-//
-//   const point = new Point(dummyData);
-//   const pointEdit = new PointEdit(dummyData);
-//   pointEdit.render();
-//   ...
-// });
+console.log(document.querySelector(`.trip-controls__new-event`));
+console.log(`waaaat`);
+
+newEventButton.addEventListener(`click`, () => {
+  console.log(`waaaat`);
+  // evt.preventDefault();
+
+  // const dummyData = {
+  //   //...
+  // }
+  //
+  // const point = new Point(dummyData);
+  // const pointEdit = new PointEdit(dummyData);
+  // pointEdit.render();
+  //...
+});
 
 defaultSort.addEventListener(`click`, () => {
   provider.getPoints()
