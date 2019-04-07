@@ -6,6 +6,7 @@ import Filter from './filter.js';
 import PointEdit from './point-edit.js';
 import {chart, typeToChartLabel} from './stats.js';
 import {provider} from './api.js';
+import ModelPoint from './model-point.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
@@ -29,21 +30,27 @@ const init = (pointsData) => {
   renderTripDates(pointsByDay);
 };
 
-console.log(document.querySelector(`.trip-controls__new-event`));
-console.log(`waaaat`);
-
 newEventButton.addEventListener(`click`, () => {
-  console.log(`waaaat`);
-  // evt.preventDefault();
+  const dummyData = {
+    'id': String(Date.now()),
+      'date_from': new Date(),
+      'date_to': new Date(),
+      'destination': {
+        name: `Moscow`,
+        description: ``,
+        pictures: []
+      },
+      'base_price': 0,
+      'is_favorite': false,
+      'offers': [],
+      'type': `bus`,
+  }
 
-  // const dummyData = {
-  //   //...
-  // }
-  //
-  // const point = new Point(dummyData);
-  // const pointEdit = new PointEdit(dummyData);
-  // pointEdit.render();
-  //...
+  const point = new ModelPoint(dummyData);
+  const pointEdit = new PointEdit(point);
+  tripPoints.insertBefore(pointEdit.render(), tripPoints.firstChild);
+  // console.log(pointEdit);
+
 });
 
 defaultSort.addEventListener(`click`, () => {
