@@ -69,6 +69,16 @@ const API = class {
       .then(ModelPoint.parsePoint);
   }
 
+  syncPoints({points}) {
+    return this._load({
+      url: `points/sync`,
+      method: `POST`,
+      body: JSON.stringify(points),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then(toJSON);
+  }
+
   deletePoint({id}) {
     return this._load({url: `points/${id}`, method: Method.DELETE});
   }
@@ -90,5 +100,5 @@ window.addEventListener(`offline`, () => {
 });
 window.addEventListener(`online`, () => {
   document.title = document.title.split(`[OFFLINE]`)[0];
-  provider.syncTasks();
+  provider.syncPoints();
 });

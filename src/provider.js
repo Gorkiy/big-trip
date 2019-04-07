@@ -75,6 +75,10 @@ const Provider = class {
     }
   }
 
+  syncPoints() {
+    return this._api.syncPoints({points: objectToArray(this._store.getAll())});
+  }
+
   getDestinations() {
     return this._api.getDestinations()
       .then((destinations) => destinations);

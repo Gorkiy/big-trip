@@ -1,3 +1,5 @@
+navigator.serviceWorker.register(`/sw.js`);
+
 import {makeFilterData} from './make-filter.js';
 import TripDay from './trip-day.js';
 import Filter from './filter.js';
