@@ -31,9 +31,9 @@ const Provider = class {
     }
   }
 
-  createPoint({point}) {
+  createPoint(point) {
     if (this._isOnline()) {
-      return this._api.createPoint({point})
+      return this._api.createPoint(point)
         .then((newPoint) => {
           this._store.setItem({key: newPoint.id, item: newPoint.toRAW()});
           return point;

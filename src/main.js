@@ -31,44 +31,45 @@ const init = (pointsData) => {
 };
 
 newEventButton.addEventListener(`click`, () => {
-  const result = {};
-  const dummyData = {
+  const newPoint = {
     'id': String(Date.now()),
-      'date_from': new Date(),
-      'date_to': new Date(),
-      'destination': {
-        name: `Moscow`,
-        description: ``,
-        pictures: []
-      },
-      'base_price': 0,
-      'is_favorite': false,
-      'offers': [],
-      'type': `bus`,
-  }
+    'date_from': new Date(),
+    'date_to': new Date(),
+    'destination': {
+      name: ``,
+      description: ``,
+      pictures: []
+    },
+    'base_price': 0,
+    'is_favorite': false,
+    'offers': [],
+    'type': `bus`,
+  };
 
-  const point = new ModelPoint(dummyData);
+  const point = new ModelPoint(newPoint);
   const pointEdit = new PointEdit(point);
 
   pointEdit.onSubmit = (newObject) => {
-    result.city = newObject.city;
-    result.type = newObject.type;
-    result.typeIcon = newObject.typeIcon;
-    result.description = newObject.description;
-    result.price = newObject.price;
-    result.time = newObject.time;
-    result.offers = newObject.offers;
-    result.date = newObject.date;
-    result.dateDue = newObject.dateDue;
-    result.uniqueDay = newObject.uniqueDay;
-    result.isFavorite = newObject.isFavorite;
-
-    provider.createPoint(result);
+    newPoint.destination = {
+      name: newObject.city,
+      description: newObject.description,
+      pictures: newObject.picture
+    };
+    newPoint.type = newObject.type.toLowerCase();
+    newPoint.offers = newObject.offers;
+    newPoint[`is_favorite`] = newObject.isFavorite;
+    newPoint[`base_price`] = newObject.price;
+    newPoint[`date_from`] = newObject.date.getTime();
+    newPoint[`date_to`] = newObject.dateDue.getTime();
+    provider.createPoint(newPoint);
     pointEdit.unrender();
-    console.log(result);
-    // pointEdit._onSubmit();
-  };
 
+    provider.getPoints()
+      .then((pointsData) => {
+        init(pointsData);
+      });
+  };
+  // Мы еще ничего не отправили на сервер, поэтому тут хватит простого анрендера
   pointEdit.onDelete = () => {
     pointEdit.unrender();
   };
@@ -76,6 +77,7 @@ newEventButton.addEventListener(`click`, () => {
   tripPoints.insertBefore(pointEdit.render(), tripPoints.firstChild);
 });
 
+// Сортировки
 defaultSort.addEventListener(`click`, () => {
   provider.getPoints()
     .then((pointsData) => {
