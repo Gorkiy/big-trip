@@ -31,6 +31,7 @@ const init = (pointsData) => {
 };
 
 newEventButton.addEventListener(`click`, () => {
+  const result = {};
   const dummyData = {
     'id': String(Date.now()),
       'date_from': new Date(),
@@ -48,9 +49,31 @@ newEventButton.addEventListener(`click`, () => {
 
   const point = new ModelPoint(dummyData);
   const pointEdit = new PointEdit(point);
-  tripPoints.insertBefore(pointEdit.render(), tripPoints.firstChild);
-  // console.log(pointEdit);
 
+  pointEdit.onSubmit = (newObject) => {
+    result.city = newObject.city;
+    result.type = newObject.type;
+    result.typeIcon = newObject.typeIcon;
+    result.description = newObject.description;
+    result.price = newObject.price;
+    result.time = newObject.time;
+    result.offers = newObject.offers;
+    result.date = newObject.date;
+    result.dateDue = newObject.dateDue;
+    result.uniqueDay = newObject.uniqueDay;
+    result.isFavorite = newObject.isFavorite;
+
+    provider.createPoint(result);
+    pointEdit.unrender();
+    console.log(result);
+    // pointEdit._onSubmit();
+  };
+
+  pointEdit.onDelete = () => {
+    pointEdit.unrender();
+  };
+
+  tripPoints.insertBefore(pointEdit.render(), tripPoints.firstChild);
 });
 
 defaultSort.addEventListener(`click`, () => {
