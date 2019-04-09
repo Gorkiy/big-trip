@@ -4,7 +4,7 @@ import {makeFilterData} from './make-filter.js';
 import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
-import {chart, typeToChartLabel} from './stats.js';
+import {chart, getChartsData, chartData} from './stats.js';
 import {provider} from './api.js';
 import ModelPoint from './model-point.js';
 
@@ -133,14 +133,7 @@ let filtersRawData = [
   makeFilterData(`future`, `filter-future`),
   makeFilterData(`past`, `filter-past`),
 ];
-const chartData = {
-  transportLabels: [],
-  transportFreq: [],
-  transportChartHeight: 0,
-  typeLabels: [],
-  cost: [],
-  moneyChartHeight: 0,
-};
+
 
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
@@ -224,47 +217,11 @@ function renderFilters(filtersData) {
     };
   });
 }
-// Генерируем данные для чартов
-const transportTypes = new Set([`Taxi`, `Flight`, `Ship`, `Drive`, `Bus`, `Train`]);
-
-const getChartsData = (data) => {
-  const transportOnlyPoints = data.filter((point) => transportTypes.has(point.type));
-  const transporsData = new Map();
-  const costData = new Map();
-  let label = ``;
-  const BAR_HEIGHT = 55;
-
-  transportOnlyPoints.map((point) => {
-    label = typeToChartLabel(point.type);
-    if (!transporsData.has(label)) {
-      transporsData.set(label, 1);
-    } else {
-      transporsData.set(label, transporsData.get(label) + 1);
-    }
-  });
-
-  data.map((point) => {
-    label = typeToChartLabel(point.type);
-    if (!costData.has(label)) {
-      costData.set(label, point.price);
-    } else {
-      costData.set(label, costData.get(label) + point.price);
-    }
-  });
-
-  chartData.transportLabels = [...transporsData.keys()];
-  chartData.transportFreq = [...transporsData.values()];
-  chartData.typeLabels = [...costData.keys()];
-  chartData.cost = [...costData.values()];
-
-  chartData.transportChartHeight = BAR_HEIGHT * chartData.transportLabels.length;
-  chartData.moneyChartHeight = BAR_HEIGHT * chartData.typeLabels.length;
-};
-
+// Рендер чартов
 const renderCharts = () => {
-
   const transChartCanvas = document.querySelector(`.statistic__transport`);
   const moneyChartCanvas = document.querySelector(`.statistic__money`);
+  const timeChartCanvas = document.querySelector(`.statistic__time-spend`);
 
   if (chart.transportChart !== null) {
     chart.transportChart.destroy();
@@ -272,14 +229,19 @@ const renderCharts = () => {
   if (chart.moneyChart !== null) {
     chart.moneyChart.destroy();
   }
+  if (chart.timeChart !== null) {
+    chart.timeChart.destroy();
+  }
 
   provider.getPoints()
     .then((pointsToChart) => {
       getChartsData(pointsToChart);
       moneyChartCanvas.height = chartData.moneyChartHeight;
+      timeChartCanvas.height = chartData.moneyChartHeight;
       transChartCanvas.height = chartData.transportChartHeight;
       chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
       chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
+      chart.generateTimeChart(timeChartCanvas, chartData.typeLabels, chartData.timeSpend);
     });
 };
 
@@ -298,7 +260,7 @@ const getPointFullPrice = (pointsData) => {
     totalPrice += fullPrice;
     point.fullPrice = fullPrice;
   });
-  document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`; // Не обновляется по сабмиту формы
+  document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`;
 };
 
 const renderTripDates = (pointsData) => {
