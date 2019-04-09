@@ -10,6 +10,14 @@ class Filter extends Component {
     this._onFilterClick = this._onFilterClick.bind(this);
   }
 
+  static makeFilterData(title, id, isChecked = false) {
+    return {
+      title,
+      id,
+      isChecked
+    };
+  }
+
   createListeners() {
     this._element.querySelector(`.trip-filter__item`)
       .addEventListener(`click`, this._onFilterClick);

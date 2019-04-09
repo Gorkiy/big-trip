@@ -56,6 +56,7 @@ class TripDay {
 
       point.onEdit = () => {
         pointEdit.render();
+        // pointEdit.element.focus();
         this._dayElements.replaceChild(pointEdit.element, point.element);
         point.unrender();
       };
@@ -84,6 +85,12 @@ class TripDay {
           });
 
         this._onSubmit();
+      };
+
+      pointEdit.onEscape = () => {
+        point.render();
+        this._dayElements.replaceChild(point.element, pointEdit.element);
+        pointEdit.unrender();
       };
 
       pointEdit.onDelete = ({id}) => {

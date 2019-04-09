@@ -22,7 +22,9 @@ class PointEdit extends Component {
     this._isFavorite = data.isFavorite;
     this._onSubmit = null;
     this._onDelete = null;
+    this._onEscape = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onEscapePress = this._onEscapePress.bind(this);
     this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
     this._onChangeDestination = this._onChangeDestination.bind(this);
@@ -53,7 +55,6 @@ class PointEdit extends Component {
         pointEditMapper[property](value);
       }
     }
-
     entry.typeIcon = types[entry.type];
     entry.description = this._description;
     entry.offers = this._offers;
@@ -63,7 +64,6 @@ class PointEdit extends Component {
     entry.dateDue = this._dateDue;
     entry._uniqueDay = this._uniqueDay;
     entry._isFavorite = this.isFavorite;
-
     return entry;
   }
 
@@ -94,6 +94,14 @@ class PointEdit extends Component {
       this._onSubmit(newData);
     }
     this.update(newData);
+  }
+
+  _onEscapePress(evt) {
+    if (evt.keyCode === 27) {
+      if (typeof this._onEscape === `function`) {
+        this._onEscape();
+      }
+    }
   }
 
   _onDeleteButtonClick() {
@@ -201,6 +209,7 @@ class PointEdit extends Component {
 
   createListeners() {
     this._element.addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.addEventListener(`keydown`, this._onEscapePress);
     this._element.querySelector(`.travel-way__select`)
       .addEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.point__button--delete`)
@@ -216,6 +225,7 @@ class PointEdit extends Component {
 
   removeListeners() {
     this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.removeEventListener(`keydown`, this._onEscapePress);
     this._element.querySelector(`.travel-way__select`)
       .removeEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.point__button--delete`)
@@ -269,6 +279,10 @@ class PointEdit extends Component {
 
   set onDelete(fn) {
     this._onDelete = fn;
+  }
+
+  set onEscape(fn) {
+    this._onEscape = fn;
   }
 
   get template() {

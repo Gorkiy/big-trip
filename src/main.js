@@ -1,6 +1,5 @@
 navigator.serviceWorker.register(`/sw.js`);
 
-import {makeFilterData} from './make-filter.js';
 import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
@@ -129,9 +128,9 @@ tableButton.addEventListener(`click`, (evt) => {
 let pointsByDay = new Map();
 export let points = [];
 let filtersRawData = [
-  makeFilterData(`everything`, `filter-everything`, true),
-  makeFilterData(`future`, `filter-future`),
-  makeFilterData(`past`, `filter-past`),
+  Filter.makeFilterData(`everything`, `filter-everything`, true),
+  Filter.makeFilterData(`future`, `filter-future`),
+  Filter.makeFilterData(`past`, `filter-past`),
 ];
 
 
