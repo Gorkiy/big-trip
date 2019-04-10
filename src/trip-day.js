@@ -50,13 +50,12 @@ class TripDay {
       let point = new Point(pointData);
       let pointEdit = new PointEdit(pointData);
       point.render();
-      pointEdit.render();
+      // pointEdit.render();
 
       this._points.push(point);
 
       point.onEdit = () => {
         pointEdit.render();
-        // pointEdit.element.focus();
         this._dayElements.replaceChild(pointEdit.element, point.element);
         point.unrender();
       };
@@ -76,7 +75,6 @@ class TripDay {
 
         provider.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
-            // unblock();
             this._getPointFullPrice(newPoint);
             point.update(newPoint);
             point.render();

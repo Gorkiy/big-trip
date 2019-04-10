@@ -209,7 +209,7 @@ class PointEdit extends Component {
 
   createListeners() {
     this._element.addEventListener(`submit`, this._onSubmitButtonClick);
-    this._element.addEventListener(`keydown`, this._onEscapePress);
+    document.addEventListener(`keydown`, this._onEscapePress);
     this._element.querySelector(`.travel-way__select`)
       .addEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.point__button--delete`)
@@ -225,7 +225,7 @@ class PointEdit extends Component {
 
   removeListeners() {
     this._element.removeEventListener(`submit`, this._onSubmitButtonClick);
-    this._element.removeEventListener(`keydown`, this._onEscapePress);
+    document.removeEventListener(`keydown`, this._onEscapePress);
     this._element.querySelector(`.travel-way__select`)
       .removeEventListener(`click`, this._onChangeType);
     this._element.querySelector(`.point__button--delete`)

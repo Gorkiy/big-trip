@@ -17,9 +17,17 @@ const newEventButton = document.querySelector(`.trip-controls__new-event`);
 const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
 const defaultSort = document.querySelector(`.trip-sorting__item--event`);
 const priceSort = document.querySelector(`.trip-sorting__item--price`);
+
 let descendingTime;
 let descendingPrice;
 let totalPrice = 0;
+
+const pointsByDay = new Map();
+const filtersRawData = [
+  Filter.makeFilterData(`everything`, `filter-everything`, true),
+  Filter.makeFilterData(`future`, `filter-future`),
+  Filter.makeFilterData(`past`, `filter-past`),
+];
 
 const init = (pointsData) => {
   tripPoints.innerHTML = ``;
@@ -124,15 +132,6 @@ tableButton.addEventListener(`click`, (evt) => {
   main.classList.toggle(`visually-hidden`);
   statistic.classList.toggle(`visually-hidden`);
 });
-
-let pointsByDay = new Map();
-export let points = [];
-let filtersRawData = [
-  Filter.makeFilterData(`everything`, `filter-everything`, true),
-  Filter.makeFilterData(`future`, `filter-future`),
-  Filter.makeFilterData(`past`, `filter-past`),
-];
-
 
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
@@ -292,7 +291,7 @@ const renderTripDates = (pointsData) => {
 // Render
 renderFilters(filtersRawData);
 
-let msg = document.createElement(`div`);
+const msg = document.createElement(`div`);
 msg.innerHTML = `Loading route...`;
 msg.classList.add(`trip-points__message`);
 tripPoints.appendChild(msg);
