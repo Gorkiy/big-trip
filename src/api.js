@@ -2,7 +2,7 @@ import ModelPoint from './model-point.js';
 import Provider from './provider.js';
 import Store from './store.js';
 
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34d`;
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAohddfS34dq`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
 const TASKS_STORE_KEY = `ninja-key`;
 
@@ -47,7 +47,7 @@ const API = class {
       .then(toJSON);
   }
 
-  createPoint({point}) {
+  createPoint(point) {
     return this._load({
       url: `points`,
       method: Method.POST,

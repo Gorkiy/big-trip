@@ -1,11 +1,11 @@
 navigator.serviceWorker.register(`/sw.js`);
 
-import {makeFilterData} from './make-filter.js';
 import TripDay from './trip-day.js';
 import Filter from './filter.js';
 import PointEdit from './point-edit.js';
-import {chart, typeToChartLabel} from './stats.js';
+import {chart, getChartsData, chartData} from './stats.js';
 import {provider} from './api.js';
+import ModelPoint from './model-point.js';
 
 const tripPoints = document.querySelector(`.trip-points`);
 const mainFilter = document.querySelector(`.trip-filter`);
@@ -13,13 +13,21 @@ const tableButton = document.querySelector(`.view-switch__item:nth-child(1)`);
 const statsButton = document.querySelector(`.view-switch__item:nth-child(2)`);
 const main = document.querySelector(`.main`);
 const statistic = document.querySelector(`.statistic`);
-// const newEventButton = document.querySelector(`.trip-controls__new-event`);
+const newEventButton = document.querySelector(`.trip-controls__new-event`);
 const timeIntSort = document.querySelector(`.trip-sorting__item--time`);
 const defaultSort = document.querySelector(`.trip-sorting__item--event`);
 const priceSort = document.querySelector(`.trip-sorting__item--price`);
+
 let descendingTime;
 let descendingPrice;
 let totalPrice = 0;
+
+const pointsByDay = new Map();
+const filtersRawData = [
+  Filter.makeFilterData(`everything`, `filter-everything`, true),
+  Filter.makeFilterData(`future`, `filter-future`),
+  Filter.makeFilterData(`past`, `filter-past`),
+];
 
 const init = (pointsData) => {
   tripPoints.innerHTML = ``;
@@ -29,18 +37,54 @@ const init = (pointsData) => {
   renderTripDates(pointsByDay);
 };
 
-// newEventButton.addEventListener(`click`, (evt) => {
-//   evt.preventDefault();
-//   const dummyData = {
-//     ...
-//   }
-//
-//   const point = new Point(dummyData);
-//   const pointEdit = new PointEdit(dummyData);
-//   pointEdit.render();
-//   ...
-// });
+newEventButton.addEventListener(`click`, () => {
+  const newPoint = {
+    'id': String(Date.now()),
+    'date_from': new Date(),
+    'date_to': new Date(),
+    'destination': {
+      name: ``,
+      description: ``,
+      pictures: []
+    },
+    'base_price': 0,
+    'is_favorite': false,
+    'offers': [],
+    'type': `bus`,
+  };
 
+  const point = new ModelPoint(newPoint);
+  const pointEdit = new PointEdit(point);
+
+  pointEdit.onSubmit = (newObject) => {
+    newPoint.destination = {
+      name: newObject.city,
+      description: newObject.description,
+      pictures: newObject.picture
+    };
+    newPoint.type = newObject.type.toLowerCase();
+    newPoint.offers = newObject.offers;
+    newPoint[`is_favorite`] = newObject.isFavorite;
+    newPoint[`base_price`] = newObject.price;
+    newPoint[`date_from`] = newObject.date.getTime();
+    newPoint[`date_to`] = newObject.dateDue.getTime();
+    provider.createPoint(newPoint);
+    pointEdit.unrender();
+
+    provider.getPoints()
+      .then((pointsData) => {
+        init(pointsData);
+      });
+  };
+  // Мы еще ничего не отправили на сервер, поэтому тут хватит простого анрендера
+  pointEdit.onDelete = () => {
+    pointEdit.unrender();
+  };
+
+  tripPoints.insertBefore(pointEdit.render(), tripPoints.firstChild);
+});
+
+// Сортировки
 defaultSort.addEventListener(`click`, () => {
   provider.getPoints()
     .then((pointsData) => {
@@ -88,22 +132,6 @@ tableButton.addEventListener(`click`, (evt) => {
   main.classList.toggle(`visually-hidden`);
   statistic.classList.toggle(`visually-hidden`);
 });
-
-let pointsByDay = new Map();
-export let points = [];
-let filtersRawData = [
-  makeFilterData(`everything`, `filter-everything`, true),
-  makeFilterData(`future`, `filter-future`),
-  makeFilterData(`past`, `filter-past`),
-];
-const chartData = {
-  transportLabels: [],
-  transportFreq: [],
-  transportChartHeight: 0,
-  typeLabels: [],
-  cost: [],
-  moneyChartHeight: 0,
-};
 
 // Сортировка точек по дням
 const sortPointsByDay = (data) => {
@@ -187,47 +215,11 @@ function renderFilters(filtersData) {
     };
   });
 }
-// Генерируем данные для чартов
-const transportTypes = new Set([`Taxi`, `Flight`, `Ship`, `Drive`, `Bus`, `Train`]);
-
-const getChartsData = (data) => {
-  const transportOnlyPoints = data.filter((point) => transportTypes.has(point.type));
-  const transporsData = new Map();
-  const costData = new Map();
-  let label = ``;
-  const BAR_HEIGHT = 55;
-
-  transportOnlyPoints.map((point) => {
-    label = typeToChartLabel(point.type);
-    if (!transporsData.has(label)) {
-      transporsData.set(label, 1);
-    } else {
-      transporsData.set(label, transporsData.get(label) + 1);
-    }
-  });
-
-  data.map((point) => {
-    label = typeToChartLabel(point.type);
-    if (!costData.has(label)) {
-      costData.set(label, point.price);
-    } else {
-      costData.set(label, costData.get(label) + point.price);
-    }
-  });
-
-  chartData.transportLabels = [...transporsData.keys()];
-  chartData.transportFreq = [...transporsData.values()];
-  chartData.typeLabels = [...costData.keys()];
-  chartData.cost = [...costData.values()];
-
-  chartData.transportChartHeight = BAR_HEIGHT * chartData.transportLabels.length;
-  chartData.moneyChartHeight = BAR_HEIGHT * chartData.typeLabels.length;
-};
-
+// Рендер чартов
 const renderCharts = () => {
-
   const transChartCanvas = document.querySelector(`.statistic__transport`);
   const moneyChartCanvas = document.querySelector(`.statistic__money`);
+  const timeChartCanvas = document.querySelector(`.statistic__time-spend`);
 
   if (chart.transportChart !== null) {
     chart.transportChart.destroy();
@@ -235,14 +227,19 @@ const renderCharts = () => {
   if (chart.moneyChart !== null) {
     chart.moneyChart.destroy();
   }
+  if (chart.timeChart !== null) {
+    chart.timeChart.destroy();
+  }
 
   provider.getPoints()
     .then((pointsToChart) => {
       getChartsData(pointsToChart);
       moneyChartCanvas.height = chartData.moneyChartHeight;
+      timeChartCanvas.height = chartData.moneyChartHeight;
       transChartCanvas.height = chartData.transportChartHeight;
       chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
       chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
+      chart.generateTimeChart(timeChartCanvas, chartData.typeLabels, chartData.timeSpend);
     });
 };
 
@@ -261,7 +258,7 @@ const getPointFullPrice = (pointsData) => {
     totalPrice += fullPrice;
     point.fullPrice = fullPrice;
   });
-  document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`; // Не обновляется по сабмиту формы
+  document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`;
 };
 
 const renderTripDates = (pointsData) => {
@@ -294,7 +291,7 @@ const renderTripDates = (pointsData) => {
 // Render
 renderFilters(filtersRawData);
 
-let msg = document.createElement(`div`);
+const msg = document.createElement(`div`);
 msg.innerHTML = `Loading route...`;
 msg.classList.add(`trip-points__message`);
 tripPoints.appendChild(msg);

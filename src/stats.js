@@ -24,9 +24,63 @@ export const typeToChartLabel = (type) => {
   }
 };
 
+export const calcTimeSpend = (ms) => {
+  return Math.floor(ms / 3600000) % 24;
+};
+
+export const chartData = {
+  transportLabels: [],
+  transportFreq: [],
+  transportChartHeight: 0,
+  typeLabels: [],
+  cost: [],
+  moneyChartHeight: 0,
+  timeSpend: [],
+};
+
+export const getChartsData = (data) => {
+  const transportTypes = new Set([`Taxi`, `Flight`, `Ship`, `Drive`, `Bus`, `Train`]);
+  const transportOnlyPoints = data.filter((point) => transportTypes.has(point.type));
+  const transporsData = new Map();
+  const costData = new Map();
+  const timeSpend = new Map();
+  let label = ``;
+  const BAR_HEIGHT = 55;
+
+  transportOnlyPoints.map((point) => {
+    label = typeToChartLabel(point.type);
+    if (!transporsData.has(label)) {
+      transporsData.set(label, 1);
+    } else {
+      transporsData.set(label, transporsData.get(label) + 1);
+    }
+  });
+
+  data.map((point) => {
+    label = typeToChartLabel(point.type);
+    let price = +point.price;
+    if (!costData.has(label)) {
+      costData.set(label, price);
+      timeSpend.set(label, point.time.timeDiffMs);
+    } else {
+      costData.set(label, costData.get(label) + price);
+      timeSpend.set(label, timeSpend.get(label) + point.time.timeDiffMs);
+    }
+  });
+
+  chartData.transportLabels = [...transporsData.keys()];
+  chartData.transportFreq = [...transporsData.values()];
+  chartData.typeLabels = [...costData.keys()];
+  chartData.cost = [...costData.values()];
+  chartData.timeSpend = [...timeSpend.values()].map((ms) => calcTimeSpend(ms));
+  chartData.transportChartHeight = BAR_HEIGHT * chartData.transportLabels.length;
+  chartData.moneyChartHeight = BAR_HEIGHT * chartData.typeLabels.length;
+};
+
 export const chart = {
   transportChart: null,
   moneyChart: null,
+  timeChart: null,
 
   generateTransportChart(container, transportLabels, transportFreq) {
     this.transportChart = new Chart(container, {
@@ -140,6 +194,74 @@ export const chart = {
               drawBorder: false
             },
             barThickness: 44,
+          }],
+          xAxes: [{
+            ticks: {
+              display: false,
+              beginAtZero: true,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            minBarLength: 50
+          }],
+        },
+        legend: {
+          display: false
+        },
+        tooltips: {
+          enabled: false,
+        }
+      }
+    });
+    return this.moneyChart;
+  },
+
+  generateTimeChart(container, typeLabels, timeSpend) {
+    this.timeChart = new Chart(container, {
+      plugins: [ChartDataLabels],
+      type: `horizontalBar`,
+      data: {
+        labels: typeLabels,
+        datasets: [{
+          data: timeSpend,
+          backgroundColor: `#ffffff`,
+          hoverBackgroundColor: `#ffffff`,
+          anchor: `start`
+        }]
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            font: {
+              size: 13
+            },
+            color: `#000000`,
+            anchor: `end`,
+            align: `start`,
+            formatter: (val) => `${val}H`
+          }
+        },
+        title: {
+          display: true,
+          text: `TIME SPENT`,
+          fontColor: `#000000`,
+          fontSize: 23,
+          position: `left`
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              fontColor: `#000000`,
+              padding: 5,
+              fontSize: 13,
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            barThickness: 44
           }],
           xAxes: [{
             ticks: {
