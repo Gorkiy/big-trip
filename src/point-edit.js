@@ -187,10 +187,13 @@ class PointEdit extends Component {
       'defaultDate': [this._date],
       'enableTime': true,
       'time_24hr': true,
-      'dateFormat': `H:i`,
+      // 'dateFormat': `H:i`, // YYYY-MM-DD по умолчанию
+      'altInput': true,
+      'altFormat': `H:i`,
       'minDate': `today`,
       'onChange': (selectedDates) => {
         this._date = selectedDates[0];
+        console.log(formatNewDate(this._date).flatpickrFormat);
         this._uniqueDay = formatNewDate(this._date).uniqueDay;
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
@@ -202,8 +205,9 @@ class PointEdit extends Component {
       'defaultDate': [this._dateDue],
       'enableTime': true,
       'time_24hr': true,
-      'dateFormat': `H:i`,
-      'minDate': this._date,
+      'altInput': true,
+      'altFormat': `H:i`,
+      'minDate': formatNewDate(this._date).flatpickrFormat, // Нужен стринг в формате
       'onChange': (selectedDates) => {
         this._dateDue = selectedDates[0];
         if (this._date && this._dateDue) {

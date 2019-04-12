@@ -14,23 +14,16 @@ export const formatNewDate = (ms) => {
   const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,
     `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
 
-  return {
-    tripYear: (`` + date.getFullYear()).substr(-2),
-    tripMonth: monthNames[date.getMonth()],
-    tripDay: date.getDate().toString(),
-    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
-  };
-};
-
-export const formatDate = (date) => {
-  const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,
-    `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
+  const monthNumber = date.getMonth() + 1;
+  const month = monthNumber < 10 ? `0` + monthNumber : monthNumber.toString();
+  const day = date.getDate() < 10 ? `0` + date.getDate() : date.getDate().toString();
 
   return {
     tripYear: (`` + date.getFullYear()).substr(-2),
     tripMonth: monthNames[date.getMonth()],
     tripDay: date.getDate().toString(),
     uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+    flatpickrFormat: date.getFullYear() + `-` + month + `-` + day,
   };
 };
 
