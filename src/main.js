@@ -68,13 +68,23 @@ newEventButton.addEventListener(`click`, () => {
     newPoint[`base_price`] = newObject.price;
     newPoint[`date_from`] = newObject.date.getTime();
     newPoint[`date_to`] = newObject.dateDue.getTime();
-    provider.createPoint(newPoint);
-    pointEdit.unrender();
 
-    provider.getPoints()
-      .then((pointsData) => {
-        init(pointsData);
-      });
+    provider.createPoint(newPoint).then(() => {
+      pointEdit.unrender();
+    }).then(() => {
+      provider.getPoints()
+        .then((pointsData) => {
+          init(pointsData);
+        });
+    });
+
+    // provider.createPoint(newPoint);
+    // pointEdit.unrender();
+    //
+    // provider.getPoints()
+    //   .then((pointsData) => {
+    //     init(pointsData);
+    //   });
   };
   // Мы еще ничего не отправили на сервер, поэтому тут хватит простого анрендера
   pointEdit.onDelete = () => {
@@ -138,7 +148,7 @@ const sortPointsByDay = (data) => {
   pointsByDay.clear();
   data.sort((a, b) => a.uniqueDay - b.uniqueDay);
 
-  for (let point of data) {
+  for (const point of data) {
     if (!pointsByDay.has(point.uniqueDay)) {
       pointsByDay.set(point.uniqueDay, [point]);
     } else {
@@ -150,7 +160,7 @@ const sortPointsByDay = (data) => {
 // Отрисовка точек из отсортированной по дням базы точек
 const renderPoints = (data) => {
   data.forEach((dayPoints) => {
-    let day = new TripDay(dayPoints);
+    const day = new TripDay(dayPoints);
     tripPoints.appendChild(day.render());
 
     day.onDelete = () => {
@@ -171,19 +181,14 @@ const renderPoints = (data) => {
 // Сортировки таблицы точек
 const sortByTime = (data, descending = true) => {
   if (descending) {
-    return data.sort((a, b) => a.time.timeDiffMs - b.time.timeDiffMs);
+    return data.sort((a, b) => a.time.timeDifferenceMs - b.time.timeDifferenceMs);
   } else {
-    return data.sort((a, b) => b.time.timeDiffMs - a.time.timeDiffMs);
+    return data.sort((a, b) => b.time.timeDifferenceMs - a.time.timeDifferenceMs);
   }
 };
 
-const sortByPrice = (data, descending = true) => {
-  if (descending) {
-    return data.sort((a, b) => a.fullPrice - b.fullPrice);
-  } else {
-    return data.sort((a, b) => b.fullPrice - a.fullPrice);
-  }
-};
+const sortByPrice = (data, descending = true) =>
+  descending ? data.sort((a, b) => a.fullPrice - b.fullPrice) : data.sort((a, b) => b.fullPrice - a.fullPrice);
 
 // Сортируем задачи под фильтры
 const filterPoints = (data, filterName) => {
@@ -200,7 +205,7 @@ const filterPoints = (data, filterName) => {
 
 function renderFilters(filtersData) {
   filtersData.forEach((rawFilter) => {
-    let filter = new Filter(rawFilter);
+    const filter = new Filter(rawFilter);
     mainFilter.appendChild(filter.render());
 
     filter.onFilter = () => {
@@ -237,7 +242,7 @@ const renderCharts = () => {
       moneyChartCanvas.height = chartData.moneyChartHeight;
       timeChartCanvas.height = chartData.moneyChartHeight;
       transChartCanvas.height = chartData.transportChartHeight;
-      chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFreq);
+      chart.generateTransportChart(transChartCanvas, chartData.transportLabels, chartData.transportFrequency);
       chart.generateMoneyChart(moneyChartCanvas, chartData.typeLabels, chartData.cost);
       chart.generateTimeChart(timeChartCanvas, chartData.typeLabels, chartData.timeSpend);
     });
@@ -246,18 +251,16 @@ const renderCharts = () => {
 // Пересчет цен с офферами на лету
 const getPointFullPrice = (pointsData) => {
   totalPrice = 0;
-  pointsData.forEach((point) => {
-    let basePrice = +point.price;
+
+  for (const point of pointsData) {
+    const basePrice = +point.price;
     const fullPrice = point.offers.reduce((sum, current) => {
-      if (current.accepted) {
-        return sum + current.price;
-      } else {
-        return sum;
-      }
+      return current.accepted ? (sum + current.price) : sum;
     }, basePrice);
     totalPrice += fullPrice;
     point.fullPrice = fullPrice;
-  });
+  }
+
   document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`;
 };
 
@@ -280,11 +283,7 @@ const renderTripDates = (pointsData) => {
   const firstMonth = firstPoint.month.slice(0, 3);
   const lastMonth = lastPoint.month.slice(0, 3);
 
-  if (firstMonth !== lastMonth) {
-    result = firstMonth + ` ` + firstPoint.day + ` — ` + lastMonth + ` ` + lastPoint.day;
-  } else {
-    result = firstMonth + ` ` + firstPoint.day + ` — ` + lastPoint.day;
-  }
+  result = (firstMonth !== lastMonth) ? firstMonth + ` ` + firstPoint.day + ` — ` + lastMonth + ` ` + lastPoint.day : firstMonth + ` ` + firstPoint.day + ` — ` + lastPoint.day;
   document.querySelector(`.trip__dates`).innerText = result;
 };
 
@@ -298,7 +297,6 @@ tripPoints.appendChild(msg);
 
 Promise.all([provider.getPoints(), provider.getDestinations(), provider.getOffers()])
   .then(([pointsData, destinations, offers]) => {
-    // console.log(pointsData);
     tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);

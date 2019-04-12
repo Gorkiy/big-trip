@@ -15,6 +15,15 @@ class Component {
     throw new Error(`You have to define template.`);
   }
 
+  get date() {
+    return {
+      day: this._day,
+      month: this._month,
+      uniqueDay: this._uniqueDay,
+      time: this._time,
+    };
+  }
+
   createElement(template) {
     const newElement = document.createElement(`div`);
     newElement.innerHTML = template;
@@ -38,15 +47,6 @@ class Component {
   removeListeners() {}
 
   update() {}
-
-  get date() {
-    return {
-      day: this._day,
-      month: this._month,
-      uniqueDay: this._uniqueDay,
-      time: this._time,
-    };
-  }
 
 }
 export default Component;

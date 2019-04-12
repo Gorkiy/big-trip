@@ -30,7 +30,7 @@ export const calcTimeSpend = (ms) => {
 
 export const chartData = {
   transportLabels: [],
-  transportFreq: [],
+  transportFrequency: [],
   transportChartHeight: 0,
   typeLabels: [],
   cost: [],
@@ -47,29 +47,29 @@ export const getChartsData = (data) => {
   let label = ``;
   const BAR_HEIGHT = 55;
 
-  transportOnlyPoints.map((point) => {
+  for (const point of transportOnlyPoints) {
     label = typeToChartLabel(point.type);
     if (!transporsData.has(label)) {
       transporsData.set(label, 1);
     } else {
       transporsData.set(label, transporsData.get(label) + 1);
     }
-  });
+  }
 
-  data.map((point) => {
+  for (const point of data) {
     label = typeToChartLabel(point.type);
     let price = +point.price;
     if (!costData.has(label)) {
       costData.set(label, price);
-      timeSpend.set(label, point.time.timeDiffMs);
+      timeSpend.set(label, point.time.timeDifferenceMs);
     } else {
       costData.set(label, costData.get(label) + price);
-      timeSpend.set(label, timeSpend.get(label) + point.time.timeDiffMs);
+      timeSpend.set(label, timeSpend.get(label) + point.time.timeDifferenceMs);
     }
-  });
+  }
 
   chartData.transportLabels = [...transporsData.keys()];
-  chartData.transportFreq = [...transporsData.values()];
+  chartData.transportFrequency = [...transporsData.values()];
   chartData.typeLabels = [...costData.keys()];
   chartData.cost = [...costData.values()];
   chartData.timeSpend = [...timeSpend.values()].map((ms) => calcTimeSpend(ms));
@@ -82,14 +82,14 @@ export const chart = {
   moneyChart: null,
   timeChart: null,
 
-  generateTransportChart(container, transportLabels, transportFreq) {
+  generateTransportChart(container, transportLabels, transportFrequency) {
     this.transportChart = new Chart(container, {
       plugins: [ChartDataLabels],
       type: `horizontalBar`,
       data: {
         labels: transportLabels,
         datasets: [{
-          data: transportFreq,
+          data: transportFrequency,
           backgroundColor: `#ffffff`,
           hoverBackgroundColor: `#ffffff`,
           anchor: `start`

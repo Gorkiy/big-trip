@@ -10,10 +10,34 @@ class TripDay {
     this._month = data[0].month;
     this._uniqueDay = data[0].uniqueDay;
     this._dayElements = ``;
-    this._recentlyDeletedId = null;
     this._element = null;
     this._onDelete = null;
     this._onSubmit = null;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
+  }
+
+  set onSubmit(fn) {
+    this._onSubmit = fn;
+  }
+
+  get element() {
+    return this._element;
+  }
+
+  get template() {
+    return `
+    <section class="trip-day">
+      <article class="trip-day__info">
+        <span class="trip-day__caption">Day</span>
+        <p class="trip-day__number">${this._day}</p>
+        <h2 class="trip-day__title">${this._month}</h2>
+      </article>
+      <div class="trip-day__items">
+      </div>
+    </section>`.trim();
   }
 
   _createElement(template) {
@@ -23,13 +47,9 @@ class TripDay {
   }
 
   _getPointFullPrice(point) {
-    let basePrice = +point.price;
+    const basePrice = +point.price;
     const fullPrice = point.offers.reduce((sum, current) => {
-      if (current.accepted) {
-        return sum + current.price;
-      } else {
-        return sum;
-      }
+      return current.accepted ? (sum + current.price) : sum;
     }, basePrice);
     point.fullPrice = fullPrice;
   }
@@ -38,10 +58,9 @@ class TripDay {
     this._element = this._createElement(this.template);
     this._dayElements = this._element.querySelector(`.trip-day__items`);
     this.build();
-
-    this._points.map((curPoint) => {
+    for (const curPoint of this._points) {
       this._dayElements.appendChild(curPoint.element);
-    });
+    }
     return this._element;
   }
 
@@ -50,8 +69,6 @@ class TripDay {
       let point = new Point(pointData);
       let pointEdit = new PointEdit(pointData);
       point.render();
-      // pointEdit.render();
-
       this._points.push(point);
 
       point.onEdit = () => {
@@ -95,7 +112,6 @@ class TripDay {
         provider.deletePoint({id})
           .then(() => provider.getPoints())
           .then(() => {
-            // Немножко костыль для удаления названия дня из верстки, если точек в этот день стало 0
             this._points[i] = null;
             pointEdit.unrender();
             if (this._points.every((element) => element === null)) {
@@ -109,31 +125,6 @@ class TripDay {
 
   unrender() {
     this._element = null;
-  }
-
-  set onDelete(fn) {
-    this._onDelete = fn;
-  }
-
-  set onSubmit(fn) {
-    this._onSubmit = fn;
-  }
-
-  get element() {
-    return this._element;
-  }
-
-  get template() {
-    return `
-    <section class="trip-day">
-      <article class="trip-day__info">
-        <span class="trip-day__caption">Day</span>
-        <p class="trip-day__number">${this._day}</p>
-        <h2 class="trip-day__title">${this._month}</h2>
-      </article>
-      <div class="trip-day__items">
-      </div>
-    </section>`.trim();
   }
 }
 

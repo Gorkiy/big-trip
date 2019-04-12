@@ -23,49 +23,8 @@ class Point extends Component {
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
   }
 
-  createListeners() {
-    this._element.addEventListener(`click`, this._onEditButtonClick);
-  }
-
-  removeListeners() {
-    this._element.removeEventListener(`click`, this._onEditButtonClick);
-  }
-
-  _onEditButtonClick() {
-    if (typeof this._onEdit === `function`) {
-      this._onEdit();
-    }
-  }
-
-  _drawOffers(offers) {
-    let count = 0;
-    return offers.map((offer) => {
-      if (offer.accepted && count < 3) {
-        count++;
-        return `<li>
-                <button class="trip-point__offer">${offer.title || ``}</button>
-              </li>`;
-      } else {
-        return ``;
-      }
-    }).join(``).trim();
-  }
-
   set onEdit(fn) {
     this._onEdit = fn;
-  }
-
-  update(data) {
-    this._city = data.city;
-    this._type = data.type;
-    this._typeIcon = data.typeIcon;
-    this._price = data.price;
-    this._offers = data.offers;
-    this._time = data.time;
-    this._date = data.date;
-    this._dateDue = data.dateDue;
-    this._fullPrice = data.fullPrice;
-    this._uniqueDay = data.uniqueDay;
   }
 
   get template() {
@@ -82,6 +41,47 @@ class Point extends Component {
   ${ this._drawOffers(this._offers) }
       </ul>
     </article>`.trim();
+  }
+
+  _drawOffers(offers) {
+    let count = 0;
+    return offers.map((offer) => {
+      if (offer.accepted && count < 3) {
+        count++;
+        return `<li>
+                <button class="trip-point__offer">${offer.title || ``}</button>
+              </li>`;
+      } else {
+        return ``;
+      }
+    }).join(``).trim();
+  }
+
+  update(data) {
+    this._city = data.city;
+    this._type = data.type;
+    this._typeIcon = data.typeIcon;
+    this._price = data.price;
+    this._offers = data.offers;
+    this._time = data.time;
+    this._date = data.date;
+    this._dateDue = data.dateDue;
+    this._fullPrice = data.fullPrice;
+    this._uniqueDay = data.uniqueDay;
+  }
+
+  createListeners() {
+    this._element.addEventListener(`click`, this._onEditButtonClick);
+  }
+
+  removeListeners() {
+    this._element.removeEventListener(`click`, this._onEditButtonClick);
+  }
+
+  _onEditButtonClick() {
+    if (typeof this._onEdit === `function`) {
+      this._onEdit();
+    }
   }
 }
 

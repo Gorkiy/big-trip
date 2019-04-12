@@ -10,12 +10,21 @@ class Filter extends Component {
     this._onFilterClick = this._onFilterClick.bind(this);
   }
 
-  static makeFilterData(title, id, isChecked = false) {
-    return {
-      title,
-      id,
-      isChecked
-    };
+  get template() {
+    return `
+    <input type="radio" id="${this._id}" name="filter" value="${this._title}" ${ this._state.isChecked && `checked` }>
+    <label class="trip-filter__item" for="${this._id}">${this._title}</label>`.trim();
+  }
+
+  set onFilter(fn) {
+    this._onFilter = fn;
+  }
+
+  createElement(template) {
+    const newElement = document.createElement(`div`);
+    newElement.classList.add(`trip-filter__container`);
+    newElement.innerHTML = template;
+    return newElement;
   }
 
   createListeners() {
@@ -34,21 +43,12 @@ class Filter extends Component {
     }
   }
 
-  set onFilter(fn) {
-    this._onFilter = fn;
-  }
-
-  createElement(template) { // Костыль. Переопределяем, чтобы инпут с лейблом были в одном родителе
-    const newElement = document.createElement(`div`);
-    newElement.classList.add(`trip-filter__container`);
-    newElement.innerHTML = template;
-    return newElement;
-  }
-
-  get template() {
-    return `
-    <input type="radio" id="${this._id}" name="filter" value="${this._title}" ${ this._state.isChecked && `checked` }>
-    <label class="trip-filter__item" for="${this._id}">${this._title}</label>`.trim();
+  static makeFilterData(title, id, isChecked = false) {
+    return {
+      title,
+      id,
+      isChecked
+    };
   }
 }
 
