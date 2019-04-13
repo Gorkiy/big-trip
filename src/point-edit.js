@@ -183,31 +183,32 @@ class PointEdit extends Component {
     const dateStart = this._element.querySelector(`.point__time input[name="date-start"]`);
     const dateEnd = this._element.querySelector(`.point__time input[name="date-end"]`);
 
-    flatpickr(dateStart, {
+    const startPicker = flatpickr(dateStart, {
       'defaultDate': [this._date],
       'enableTime': true,
       'time_24hr': true,
-      // 'dateFormat': `H:i`, // YYYY-MM-DD по умолчанию
       'altInput': true,
       'altFormat': `H:i`,
-      'minDate': `today`,
       'onChange': (selectedDates) => {
         this._date = selectedDates[0];
-        console.log(formatNewDate(this._date).flatpickrFormat);
         this._uniqueDay = formatNewDate(this._date).uniqueDay;
+        endPicker.set(`minDate`, formatNewDate(this._date).flatpickrFormat);
         if (this._date && this._dateDue) {
           this._time = getTime(this._date, this._dateDue);
         }
       },
     });
 
-    flatpickr(dateEnd, {
+    const endPicker = flatpickr(dateEnd, {
       'defaultDate': [this._dateDue],
       'enableTime': true,
       'time_24hr': true,
       'altInput': true,
       'altFormat': `H:i`,
-      'minDate': formatNewDate(this._date).flatpickrFormat, // Нужен стринг в формате
+      'minDate': formatNewDate(this._date).flatpickrFormat,
+      'onOpen': () => {
+        endPicker.set(`minDate`, formatNewDate(this._date).flatpickrFormat);
+      },
       'onChange': (selectedDates) => {
         this._dateDue = selectedDates[0];
         if (this._date && this._dateDue) {
