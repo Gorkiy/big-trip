@@ -3,37 +3,27 @@ export const types = {
   'Bus': `🚌`,
   'Train': `🚂`,
   'Ship': `🛳️`,
-  // 'Transport': `🚊`,
   'Drive': `🚗`,
   'Flight': `✈️`,
   'Check-in': `🏨`,
   'Sightseeing': `🏛`,
-  // 'Restaurant': `🍴`,
 };
 
 export const formatNewDate = (ms) => {
-  let date = new Date(ms);
-  // console.log(date);
+  const date = new Date(ms);
   const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,
     `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
+
+  const monthNumber = date.getMonth() + 1;
+  const month = monthNumber < 10 ? `0` + monthNumber : monthNumber.toString();
+  const day = date.getDate() < 10 ? `0` + date.getDate() : date.getDate().toString();
 
   return {
     tripYear: (`` + date.getFullYear()).substr(-2),
     tripMonth: monthNames[date.getMonth()],
     tripDay: date.getDate().toString(),
     uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
-  };
-};
-
-export const formatDate = (date) => {
-  const monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `June`,
-    `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
-
-  return {
-    tripYear: (`` + date.getFullYear()).substr(-2),
-    tripMonth: monthNames[date.getMonth()],
-    tripDay: date.getDate().toString(),
-    uniqueDay: `` + date.getDate() + (date.getMonth() + 1) + date.getFullYear(),
+    flatpickrFormat: date.getFullYear() + `-` + month + `-` + day,
   };
 };
 
@@ -42,16 +32,15 @@ export const getTime = (date, dateDue) => {
     from: ``,
     due: ``,
     duration: ``,
-    timeDiffMs: ``
+    timeDifferenceMs: ``
   };
 
-  const diffMs = dateDue - date;
-  const diffHrs = Math.floor(diffMs / 3600000) % 24;
-  const diffDays = Math.floor(diffMs / 86400000);
-  // const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
-  const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+  const differenceMs = dateDue - date;
+  const differenceHours = Math.floor(differenceMs / 3600000) % 24;
+  const differenceDays = Math.floor(differenceMs / 86400000);
+  const differenceMins = Math.round(((differenceMs % 86400000) % 3600000) / 60000);
 
-  let days = diffDays;
+  let days = differenceDays;
   let hours = date.getHours();
   let minutes = date.getMinutes();
   if (hours < 10) {
@@ -72,16 +61,11 @@ export const getTime = (date, dateDue) => {
   if (dueMinutes < 10) {
     dueMinutes += `0`;
   }
-
-  if (diffMs < 86400000) {
-    interval.duration = diffHrs + `H ` + diffMins;
-  } else {
-    interval.duration = days + `D ` + diffHrs + `H ` + diffMins;
-  }
+  interval.duration = (differenceMs < 86400000) ? (differenceHours + `H ` + differenceMins) : (days + `D ` + differenceHours + `H ` + differenceMins);
 
   interval.from = hours + `:` + minutes;
   interval.due = dueHours + `:` + dueMinutes;
-  interval.timeDiffMs = diffMs;
+  interval.timeDifferenceMs = differenceMs;
 
   return interval;
 };
