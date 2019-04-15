@@ -183,7 +183,7 @@ class PointEdit extends Component {
     const dateStart = this._element.querySelector(`.point__time input[name="date-start"]`);
     const dateEnd = this._element.querySelector(`.point__time input[name="date-end"]`);
 
-    flatpickr(dateStart, {
+    const startPicker = flatpickr(dateStart, {
       'defaultDate': [this._date],
       'enableTime': true,
       'time_24hr': true,
