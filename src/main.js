@@ -77,16 +77,8 @@ newEventButton.addEventListener(`click`, () => {
           init(pointsData);
         });
     });
-
-    // provider.createPoint(newPoint);
-    // pointEdit.unrender();
-    //
-    // provider.getPoints()
-    //   .then((pointsData) => {
-    //     init(pointsData);
-    //   });
   };
-  // Мы еще ничего не отправили на сервер, поэтому тут хватит простого анрендера
+
   pointEdit.onDelete = () => {
     pointEdit.unrender();
   };
