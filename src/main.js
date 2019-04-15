@@ -70,8 +70,6 @@ newEventButton.addEventListener(`click`, () => {
     newPoint[`date_to`] = newObject.dateDue.getTime();
 
     provider.createPoint(newPoint).then(() => {
-      pointEdit.unrender();
-    }).then(() => {
       provider.getPoints()
         .then((pointsData) => {
           init(pointsData);
