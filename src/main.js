@@ -29,7 +29,7 @@ const filtersRawData = [
   Filter.makeFilterData(`past`, `filter-past`),
 ];
 
-const init = (pointsData) => {
+const render = (pointsData) => {
   tripPoints.innerHTML = ``;
   getPointFullPrice(pointsData);
   sortPointsByDay(pointsData);
@@ -70,11 +70,9 @@ newEventButton.addEventListener(`click`, () => {
     newPoint[`date_to`] = newObject.dateDue.getTime();
 
     provider.createPoint(newPoint).then(() => {
-      pointEdit.unrender();
-    }).then(() => {
       provider.getPoints()
         .then((pointsData) => {
-          init(pointsData);
+          render(pointsData);
         });
     });
   };
@@ -90,7 +88,7 @@ newEventButton.addEventListener(`click`, () => {
 defaultSort.addEventListener(`click`, () => {
   provider.getPoints()
     .then((pointsData) => {
-      init(pointsData);
+      render(pointsData);
     });
 });
 
@@ -158,13 +156,13 @@ const renderPoints = (data) => {
     day.onDelete = () => {
       provider.getPoints()
       .then((remainPoints) => {
-        init(remainPoints);
+        render(remainPoints);
       });
     };
     day.onSubmit = () => {
       provider.getPoints()
       .then((allPoints) => {
-        init(allPoints);
+        render(allPoints);
       });
     };
   });
@@ -292,7 +290,7 @@ Promise.all([provider.getPoints(), provider.getDestinations(), provider.getOffer
     tripPoints.removeChild(msg);
     PointEdit.setDestinations(destinations);
     PointEdit.setAllOffers(offers);
-    init(pointsData);
+    render(pointsData);
   })
   .catch(() => {
     msg.innerHTML = `Something went wrong while loading your route info. Check your connection or try again later`;

@@ -1,6 +1,9 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+const transportTypes = new Set([`Taxi`, `Flight`, `Ship`, `Drive`, `Bus`, `Train`]);
+const BAR_HEIGHT = 55;
+
 export const typeToChartLabel = (type) => {
   switch (type) {
     case `Taxi`:
@@ -39,13 +42,11 @@ export const chartData = {
 };
 
 export const getChartsData = (data) => {
-  const transportTypes = new Set([`Taxi`, `Flight`, `Ship`, `Drive`, `Bus`, `Train`]);
   const transportOnlyPoints = data.filter((point) => transportTypes.has(point.type));
   const transporsData = new Map();
   const costData = new Map();
   const timeSpend = new Map();
   let label = ``;
-  const BAR_HEIGHT = 55;
 
   for (const point of transportOnlyPoints) {
     label = typeToChartLabel(point.type);

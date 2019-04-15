@@ -92,14 +92,10 @@ class TripDay {
 
         provider.updatePoint({id: pointData.id, data: pointData.toRAW()})
           .then((newPoint) => {
-            this._getPointFullPrice(newPoint);
             point.update(newPoint);
             point.render();
-            this._dayElements.replaceChild(point.element, pointEdit.element);
-            pointEdit.unrender();
-          });
-
-        this._onSubmit();
+          })
+          .then(this._onSubmit);
       };
 
       pointEdit.onEscape = () => {
