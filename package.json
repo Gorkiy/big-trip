@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "Личный проект «Большое путешествие» от HTML Academy",
+  "homepage": "https://gorkiy.github.io/big-trip",
   "scripts": {
     "build": "webpack",
     "eslint": "eslint src/**/*.js",
     "test": "npm run eslint",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d public",
     "start": "webpack-dev-server --open"
   },
   "devDependencies": {
@@ -22,6 +25,7 @@
   "dependencies": {
     "chart.js": "2.8.0",
     "chartjs-plugin-datalabels": "0.6.0",
-    "flatpickr": "^4.5.7"
+    "flatpickr": "^4.5.7",
+    "gh-pages": "^2.1.1"
   }
 }
